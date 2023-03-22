@@ -6,7 +6,7 @@
 <br />
 <div align="center">
   <a href="https://pub.dev/packages/pix_sicoob">
-    <img src="images\package-logo.jpeg" alt="Logo" width="600">
+    <img src="https://raw.githubusercontent.com/AcxTechSistemas/pix_sicoob/main/images/package-logo.jpeg" alt="Logo" width="600">
   </a>
 
   <p align="center">
@@ -58,7 +58,7 @@
 
 <br>
 <Center>
-<img src="images/product-screenshot.png" alt="Pix Sicoob PNG" width=500>
+<img src="https://raw.githubusercontent.com/AcxTechSistemas/pix_sicoob/main/images/product-screenshot.png" alt="Pix Sicoob PNG" width=500>
 </Center>
 
 <br>
