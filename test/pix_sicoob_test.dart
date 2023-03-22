@@ -7,12 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pix_sicoob/pix_sicoob.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/insta_bill/calendario.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/insta_bill/insta_bill.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/devedor.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/info_adicionais.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/valor.dart';
 import 'package:pix_sicoob/src/features/token/model/token.dart';
-import 'package:pix_sicoob/src/shared/models/pix/pix.dart';
 
 void main() {
   late PixSicoob pixSicoob;
