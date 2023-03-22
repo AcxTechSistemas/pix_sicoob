@@ -63,7 +63,7 @@
 
 <br>
 
-This package offers an easy-to-use interface for integrating with Banco do Brasil's Pix API. With this package, you can get transaction information quickly and efficiently in your Flutter apps.
+This package offers an easy-to-use interface for integrating with Sicoob's Pix API. With this package, you can get transaction information quickly and efficiently in your Flutter apps.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

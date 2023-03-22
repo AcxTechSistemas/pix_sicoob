@@ -1,5 +1,3 @@
-## [1.0.0] - 22-03-2023
+## [1.0.1] - 22-03-2023
 
-- Inicio do projeto
-- Implementação do codigo incial
-- Implementação Inicial das classes de Serviços com seus respectivos testes
+- Corrigido erros de digitacao no readme
