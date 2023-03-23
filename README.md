@@ -101,7 +101,9 @@ b) or use:
 
 This package is ready for get transactions information quickly!
 
-First instantiate the class passing the appropriate parameters
+1. First instantiate the class passing the appropriate parameters
+2. Second get the token
+3. Third fetch your Pix transactions quickly!
 
 ### Instantiate the class
 
@@ -119,6 +121,21 @@ final pixSicoob = PixSicoob(
 
   certificatePassword: 'CERTIFICATE_PASSWORD',
 );
+```
+
+### Get the token
+
+```dart
+final token = await pixSicoob.getToken();
+```
+
+### Fetch your Pix transacations Quickly!
+
+```dart
+final listPix = await pixSicoob.fetchTransactions(
+  token: token,
+);
+//Returns the last 4 days transactions
 ```
 
 _For more examples, please refer to the_ [Documentation](https://pub.dev/documentation/pix_sicoob/latest/)
