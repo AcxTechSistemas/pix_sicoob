@@ -103,7 +103,7 @@ This package is ready for get transactions information quickly!
 
 First instantiate the class passing the appropriate parameters
 
-### GetToken
+### Instantiate the class
 
 ```Dart
 final pixSicoob = PixSicoob(
