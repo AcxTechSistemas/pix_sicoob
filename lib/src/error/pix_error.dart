@@ -1,7 +1,13 @@
 enum PixErrorType {
+  // Certificate Related Erros
   incorrectCertificatePassword,
   invalidPkcs12Certificate,
   invalidCertificateBase64String,
+
+  // Http call related errors
+  networkError,
+
+  // Unknown related errors
   unknown,
 }
 

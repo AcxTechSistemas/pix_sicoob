@@ -27,4 +27,11 @@ class PixErrorConverter {
   static PixError unknownError(dynamic e) {
     return PixError(e, PixErrorType.unknown);
   }
+
+  static PixError httpException(Exception exception) {
+    return PixError(
+      exception.toString(),
+      PixErrorType.networkError,
+    );
+  }
 }

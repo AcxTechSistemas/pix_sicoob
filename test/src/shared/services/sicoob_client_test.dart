@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:pix_sicoob/src/error/pix_error.dart';
 import 'package:pix_sicoob/src/services/sicoob_client.dart';
 
 class MockIOClient extends Mock implements IOClient {}
@@ -32,54 +33,76 @@ void main() {
     testResponseBody = '{"key": "value"}';
   });
 
-  test(
-      'Metodo GET Deve retornar um mapa de strings com os valores do JSON retornado pela API',
-      () async {
-    // Configura o mock da chamada http
-    when(() => mockIOClient.get(any(), headers: any(named: 'headers')))
-        .thenAnswer((_) async => Response(testResponseBody, 200));
+  group('GET: ', () {
+    test('Deve retornar um Map<String,dynamic>', () async {
+      when(() => mockIOClient.get(any(), headers: any(named: 'headers')))
+          .thenAnswer((_) async => Response(testResponseBody, 200));
 
-    // Configura as expectativas do teste
-    final expectedResponse = jsonDecode(testResponseBody);
+      final expectedResponse = jsonDecode(testResponseBody);
 
-    // Executa o método que está sendo testado
-    final result = await client.get(
-      testUri,
-      headers: testHeaders,
-      queryParameters: testQueryParameters,
-    );
+      final result = await client.get(
+        testUri,
+        headers: testHeaders,
+        queryParameters: testQueryParameters,
+      );
 
-    final response = result.getOrElse(
-      (failure) => fail(failure.toString()),
-    );
+      final response = result.getOrThrow();
 
-    // Verifica se o resultado foi o esperado
-    expect(response, equals(expectedResponse));
-    expect(response, isA<Map<String, dynamic>>());
+      expect(response, equals(expectedResponse));
+      expect(response, isA<Map<String, dynamic>>());
+    });
+
+    test(r'''Em caso de erro na chamada HTTP:
+    Deverá retornar um PixError do tipo: networkError''', () async {
+      when(() => mockIOClient.get(any(), headers: any(named: 'headers')))
+          .thenThrow((_) async => Exception('Erro ao requisitar a API'));
+
+      final response = await client.get(
+        testUri,
+        headers: testHeaders,
+        queryParameters: testQueryParameters,
+      );
+      final result = response.exceptionOrNull();
+
+      expect(result, isNotNull);
+      expect(result!.type, equals(PixErrorType.networkError));
+    });
   });
-  test(
-      'Metodo Post Deve retornar um mapa de strings com os valores do JSON retornado pela API',
-      () async {
-    // Configura o mock da chamada http
-    when(() => mockIOClient.post(any(),
-            headers: any(named: 'headers'), body: any(named: 'body')))
-        .thenAnswer((_) async => Response(testResponseBody, 200));
 
-    // Configura as expectativas do teste
-    final expectedResponse = jsonDecode(testResponseBody);
+  group('POST: ', () {
+    test('Deve retornar um Map<String,dynamic>', () async {
+      when(() => mockIOClient.post(any(),
+              headers: any(named: 'headers'), body: any(named: 'body')))
+          .thenAnswer((_) async => Response(testResponseBody, 200));
 
-    // Executa o método que está sendo testado
-    final result = await client.post(
-      testUri,
-      headers: testHeaders,
-      body: testbody,
-    );
-    final response = result.getOrElse(
-      (failure) => fail(failure.toString()),
-    );
+      final expectedResponse = jsonDecode(testResponseBody);
 
-    // Verifica se o resultado foi o esperado
-    expect(response, equals(expectedResponse));
-    expect(response, isA<Map<String, dynamic>>());
+      final result = await client.post(
+        testUri,
+        headers: testHeaders,
+        body: testbody,
+      );
+      final response = result.getOrThrow();
+
+      expect(response, equals(expectedResponse));
+      expect(response, isA<Map<String, dynamic>>());
+    });
+
+    test(r'''Em caso de erro na chamada HTTP:
+    Deverá retornar um PixError do tipo: networkError''', () async {
+      when(() => mockIOClient.post(any(),
+              headers: any(named: 'headers'), body: any(named: 'body')))
+          .thenThrow((_) async => Exception('Erro ao requisitar a API'));
+
+      final response = await client.post(
+        testUri,
+        headers: testHeaders,
+        body: testbody,
+      );
+      final result = response.exceptionOrNull();
+
+      expect(result, isNotNull);
+      expect(result!.type, equals(PixErrorType.networkError));
+    });
   });
 }
