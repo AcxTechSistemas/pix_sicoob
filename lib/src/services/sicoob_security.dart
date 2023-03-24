@@ -2,32 +2,21 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:pix_sicoob/src/error/pix_error.dart';
+import 'package:pix_sicoob/src/error/pix_error_converter.dart';
 import 'package:pix_sicoob/src/services/client_security.dart';
 import 'package:result_dart/result_dart.dart';
 
 ///This class provides an implementation of the abstract ClientSecurity class,
 ///for client authentication and security using certificates specific to the Sicoob system.
 ///
-///The class has three methods:
-///
-/// - `getContext` - Returns a SecurityContext object for secure communication with a server,
-/// given a base64-encoded certificate string and its password.
-/// Throws a PixError if the certificate is invalid or the password is incorrect.
-///
-/// - `certFileToBase64String` - Reads a PKCS12 certificate file and returns
-/// its base64-encoded string representation, for use in secure communication.
-/// Throws a PixError if the file is not found, is not a valid PKCS12 file, or cannot be read for any reason.
-///
-/// - `certificateStringToBytes` - Converts a base64-encoded certificate string to a byte array,
-/// for use in secure communication. Returns a Result object that contains the byte array,
-/// or a PixError if the string is invalid.
 class SicoobSecurity implements ClientSecurity {
   /// Returns a [SecurityContext] object for secure communication with a server,
   ///
-  /// given a base64-encoded certificate string and its password.
+  /// This method requires two parameters:
+  /// - [certificateBase64String] Client certificate in base64 String.
+  /// - [certificatePassword] Certificate password
   ///
-  /// Throws a [PixError] if the certificate is invalid or the password is incorrect.
-  ///
+  /// Throws a [PixError] on Exception.
   @override
   Result<SecurityContext, PixError> getContext({
     required String certificateBase64String,
@@ -48,13 +37,11 @@ class SicoobSecurity implements ClientSecurity {
         );
       return Success(securityContext);
     } on TlsException catch (e) {
-      if (e.osError.toString().contains('INCORRECT_PASSWORD')) {
-        return Failure(PixError('incorrect_certificate_password'));
-      } else if (e.osError.toString().contains('tBAD_PKCS12_DATA'[4])) {
-        return Failure(PixError('invalid_pkcs12_certificate'));
-      } else {
-        return Failure(PixError(e.toString()));
-      }
+      final error = PixErrorConverter.certificateException(e);
+      return Failure(error);
+    } catch (e) {
+      final unknownError = PixErrorConverter.unknownError(e);
+      return Failure(unknownError);
     }
   }
 
@@ -79,7 +66,7 @@ class SicoobSecurity implements ClientSecurity {
 
   /// Converts a base64-encoded certificate string to a byte array, for use in secure communication.
   ///
-  /// Returns a [Result] object that contains the byte array, or a [PixError] if the string is invalid.
+  /// Returns a [Result] object that contains the byte array, or a [PixError] on Exception.
   ///
   /// Example usage:
   ///
@@ -97,11 +84,11 @@ class SicoobSecurity implements ClientSecurity {
       var certificateBytes = base64.decode(certificateBase64String);
       return Success(certificateBytes);
     } on FormatException catch (e) {
-      if (e.message.contains('Invalid length, must be multiple of four')) {
-        return Failure(PixError('invalid_certificate_base64String'));
-      } else {
-        return Failure(PixError(e.toString()));
-      }
+      final error = PixErrorConverter.formatException(e);
+      return Failure(error);
+    } catch (e) {
+      final unknownError = PixErrorConverter.unknownError(e);
+      return Failure(unknownError);
     }
   }
 }
