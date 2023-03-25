@@ -1,23 +1,25 @@
-// This package provides an abstract class for client service implementation, for making HTTP requests.
-
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:result_dart/result_dart.dart';
 
+/// This abstract class represents a client service that can perform GET and POST requests
+/// and returns a Result object that contains either a Map<String, dynamic> with the response body
+/// or a PixException if an error occurs.
 abstract class ClientService {
-  /// Sends an HTTP GET request to the specified [uri], with optional [headers] and [queryParameters].
+  /// Performs a GET request to the specified [uri] and returns a [Result] object
+  /// containing either a [Map<String, dynamic>] with the response body or a [PixException] if an error occurs.
   ///
-  /// Returns a [Future] that completes with a [Result] object that contains a map of response data,
-  /// or an [Exception] if the request fails.
-  Future<Result<Map<String, dynamic>, Exception>> get(
+  /// Optional [headers] and [queryParameters] can be provided for the request.
+  Future<Result<Map<String, dynamic>, PixException>> get(
     Uri uri, {
     Map<String, String>? headers,
     Map<String, String>? queryParameters,
   });
 
-  /// Sends an HTTP POST request to the specified [uri], with optional [headers] and [body].
+  /// Performs a POST request to the specified [uri] and returns a [Result] object
+  /// containing either a [Map<String, dynamic>] with the response body or a [PixException] if an error occurs.
   ///
-  /// Returns a [Future] that completes with a [Result] object that contains a map of response data,
-  /// or an [Exception] if the request fails.
-  Future<Result<Map<String, dynamic>, Exception>> post(
+  /// An optional [headers] and [body] can be provided for the request.
+  Future<Result<Map<String, dynamic>, PixException>> post(
     Uri uri, {
     Map<String, String>? headers,
     dynamic body,

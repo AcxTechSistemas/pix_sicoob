@@ -1,4 +1,6 @@
-import 'package:pix_sicoob/src/error/pix_error.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
+import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
+import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/billing/billing.dart';
 import 'package:pix_sicoob/src/features/cob/insta_bill/models/insta_bill/insta_bill.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
@@ -6,23 +8,19 @@ import 'package:result_dart/result_dart.dart';
 
 import '../../../token/model/token.dart';
 
-/// A repository class responsible for handling the creation of insta billings.
-///
-/// The [InstaBillRepository] requires a [ClientService] instance to communicate with the server.
+/// A repository class for interacting with the Pix InstaBill API.
 class InstaBillRepository {
-  /// An instance of [ClientService] to communicate with the server.
   final ClientService client;
 
-  /// Constructs a new [InstaBillRepository] instance with the given [client].
+  /// Constructs an instance of [InstaBillRepository] with the specified [client].
   InstaBillRepository(
     this.client,
   );
 
-  /// Creates a new billing on the server.
+  /// Creates a new Pix InstaBill billing using the specified [token], [instaBill], and [cobUri].
   ///
-  /// Requires a valid [Token] instance, an [InstaBill] instance, and the [cobUri] endpoint to post the request.
-  /// Returns a [Result] with a [Billing] instance if successful, or a [PixError] instance if failed.
-  Future<Result<Billing, PixError>> createBilling({
+  /// Returns a [Result] containing a [Billing] object if successful, otherwise a [PixException].
+  Future<Result<Billing, PixException>> createBilling({
     required Token token,
     required InstaBill instaBill,
     required Uri cobUri,
@@ -40,10 +38,10 @@ class InstaBillRepository {
         if (success.containsKey('calendario')) {
           return Success(Billing.fromMap(success));
         } else {
-          return Failure(PixError(success));
+          return Failure(SicoobApiException.apiError(success));
         }
       },
-      (error) => Failure(PixError(error)),
+      (error) => Failure(SicoobUnknownException.unknownException(error)),
     );
   }
 }

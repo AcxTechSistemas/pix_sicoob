@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pix_sicoob/src/error/pix_error.dart';
+import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
 import 'package:pix_sicoob/src/features/pix/fetch_transactions/repository/fetch_transactions_repository.dart';
 import 'package:pix_sicoob/src/features/token/model/token.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
 import 'package:result_dart/result_dart.dart';
 
-class MockClientService extends Mock implements ClientService {}
+class _MockClientService extends Mock implements ClientService {}
 
 void main() {
   late ClientService client;
@@ -14,10 +14,12 @@ void main() {
   late Uri uri;
   late Token token;
   setUp(() {
-    client = MockClientService();
+    client = _MockClientService();
     fetchRepository = FetchTransactionsRepository(client);
+
     uri = Uri.parse('https://teste.example.com/auth');
     registerFallbackValue(uri);
+
     token = Token.fromMap({
       "access_token": "eyJhbGciOiJSUzI1NiIsIn",
       "expires_in": 300,
@@ -29,9 +31,10 @@ void main() {
   });
 
   group('Consulta de Transações PIX', () {
-    test(
-        'A requisição na API deve retornar uma lista de Transações PIX de uma Pagina',
-        () async {
+    test(r'''Response com 1 Pagina:
+              O Metodo deve retornar uma lista de Transações PIX
+              com todos os itens dessa pagina.
+          ''', () async {
       when(() => client.get(any(),
               headers: any(named: 'headers'),
               queryParameters: any(named: 'queryParameters')))
@@ -41,15 +44,17 @@ void main() {
         token,
         uri: uri,
       );
+
       var result = response.getOrNull();
       expect(result, isNotNull);
       expect(result!.length, 1);
       expect(result[0].nomePagador, equals('VICTOR'));
     });
 
-    test(
-        'A requisição na API deve retornar uma lista de Transações PIX de multiplas paginas',
-        () async {
+    test(r'''Response com multiplas Paginas:
+              O Metodo deve percorrer em todas as paginas e
+              retornar uma lista de Transações PIX contendo todos os itens.
+          ''', () async {
       when(() => client.get(any(),
               headers: any(named: 'headers'),
               queryParameters: any(named: 'queryParameters')))
@@ -59,13 +64,16 @@ void main() {
         token,
         uri: uri,
       );
+
       var result = response.getOrNull();
       expect(result, isNotNull);
       expect(result!.length, 20);
       expect(result[0].nomePagador, equals('VICTOR'));
     });
 
-    test('A requisição na API deve retornar uma Failure', () async {
+    test(r'''Map da response não contem uma key "Pix":
+              O Metodo deverá retornar uma failure de SicoobApiException.
+          ''', () async {
       final expectedResponse = {
         "httpCode": "401",
         "httpMessage": "Unauthorized",
@@ -77,14 +85,13 @@ void main() {
               queryParameters: any(named: 'queryParameters')))
           .thenAnswer((_) async => Success(expectedResponse));
 
-      final response = await fetchRepository.fetchTransactions(
-        token,
-        uri: uri,
-      );
+      final response = await fetchRepository.fetchTransactions(token, uri: uri);
+
       var result = response.exceptionOrNull();
+
       expect(result, isNotNull);
-      expect(result, isA<PixError>());
-      expect(result!.message, containsPair('httpCode', '401'));
+      expect(result, isA<SicoobApiException>());
+      expect(result!.exceptionType, equals(ApiErrorType.apiErrorType));
     });
   });
 }

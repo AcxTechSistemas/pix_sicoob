@@ -57,7 +57,7 @@ void main() {
         calendario: Calendario(),
         devedor: Devedor(nome: 'Teste'),
         valor: Valor(original: 9999),
-        chave: '+5562999999999',
+        chave: '+559999999999',
         solicitacaoPagador: 'Teste',
         infoAdicionais: [
           InfoAdicionais(nome: 'teste', valor: 9999),
