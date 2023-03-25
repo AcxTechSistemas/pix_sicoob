@@ -27,13 +27,25 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-final pixSicoob = PixSicoob(
-  clientID: 'CLIENT_ID',
-  certificateBase64String: 'CERT_BASE64_STRING',
-  certificatePassword: 'CERTIFICATE_PASSWORD',
-);
+late PixSicoob pixSicoob;
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<Pix>> fetchTransactions() async {
+    pixSicoob = PixSicoob(
+      clientID: '',
+      certificateBase64String: '',
+      certificatePassword: '',
+    );
+    final token = await pixSicoob.getToken();
+    final listPix = await pixSicoob.fetchTransactions(token: token);
+    return listPix;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,15 +53,7 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Api Pix V2 Sicoob'),
       ),
       body: FutureBuilder(
-        future: pixSicoob.getToken().then(
-              (token) => pixSicoob.fetchTransactions(
-                token: token,
-                dateTimeRange: DateTimeRange(
-                  start: DateTime.now().subtract(const Duration(days: 30)),
-                  end: DateTime.now(),
-                ),
-              ),
-            ),
+        future: fetchTransactions(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -57,7 +61,7 @@ class _HomePageState extends State<HomePage> {
             case ConnectionState.active:
               return const Center(child: CircularProgressIndicator());
             case ConnectionState.done:
-              if (snapshot.hasData) {
+              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                 int length = snapshot.data!.length;
 
                 return RefreshIndicator(
@@ -77,6 +81,16 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 );
+              } else if (snapshot.hasError) {
+                if (snapshot.error is PixException) {
+                  final error = snapshot.error;
+                  final errorMessage = error is PixException
+                      ? error.message
+                      : snapshot.error.toString();
+                  return Center(
+                    child: Text(errorMessage),
+                  );
+                }
               }
               return const Center(
                 child: Text('Nenhuma transação encontrada'),

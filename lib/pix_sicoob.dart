@@ -121,6 +121,7 @@ class PixSicoob {
     final repository = FetchTransactionsRepository(_client);
     final response = await repository.fetchTransactions(
       token,
+      clientID: _clientID,
       uri: _apiUri,
       dateTimeRange: dateTimeRange,
     );

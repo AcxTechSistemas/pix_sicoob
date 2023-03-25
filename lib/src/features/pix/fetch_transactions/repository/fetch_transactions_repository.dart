@@ -14,7 +14,7 @@ class FetchTransactionsRepository {
   /// Instance of the [ClientService] used to make API calls
   final ClientService _client;
 
-  /// Instance of the [ClientService] used to make API calls
+  /// Instance of the [Parametros] used to make API calls
   late Parametros _parametros;
 
   /// Constructor for [FetchTransactionsRepository] that receives a [ClientService]
@@ -30,13 +30,19 @@ class FetchTransactionsRepository {
   /// Returns a [Failure] object containing a [PixException] if unsuccessful
   Future<Result<List<Pix>, PixException>> fetchTransactions(
     Token token, {
+    required String clientID,
     required Uri uri,
     DateTimeRange? dateTimeRange,
   }) async {
+    if (clientID.isEmpty) {
+      return Failure(
+          SicoobApiException.apiError({'message': 'ClientID cannot be empty'}));
+    }
     List<Pix> pixTransactions = [];
     try {
       final response = await _callApi(
         token,
+        clientID: clientID,
         uri: uri,
         dateTimeRange: dateTimeRange,
       );
@@ -52,6 +58,7 @@ class FetchTransactionsRepository {
           final paginaAtual = i.toString();
           final multiplePagesResponse = await _callApi(
             token,
+            clientID: clientID,
             uri: uri,
             dateTimeRange: dateTimeRange,
             paginaAtual: paginaAtual,
@@ -81,6 +88,7 @@ class FetchTransactionsRepository {
   /// Throws a [SicoobApiException] or [SicoobUnknownException] if there's an error making the API call
   Future<Map<String, dynamic>> _callApi(
     Token token, {
+    required String clientID,
     required Uri uri,
     required DateTimeRange? dateTimeRange,
     String paginaAtual = '0',
@@ -100,7 +108,10 @@ class FetchTransactionsRepository {
         'fim': finalDate,
         'paginacao.paginaAtual': paginaAtual,
       },
-      headers: {'Authorization': '${token.tokenType} ${token.accessToken}'},
+      headers: {
+        'Authorization': '${token.tokenType} ${token.accessToken}',
+        'x-sicoob-clientid': clientID,
+      },
     );
     return response.fold((success) {
       if (success.containsKey('pix')) {

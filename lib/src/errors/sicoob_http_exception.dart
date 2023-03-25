@@ -1,3 +1,4 @@
+// ignore_for_file:  sort_constructors_first
 // ignore_for_file: public_member_api_docs
 
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
@@ -33,4 +34,10 @@ class SicoobHttpException implements PixException {
       type: HttpExceptionType.networkError,
     );
   }
+
+  @override
+  String toString() => '''
+SicoobHttpException:
+      error: $_error, 
+      type: $_type''';
 }

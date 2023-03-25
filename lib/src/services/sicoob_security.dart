@@ -23,6 +23,17 @@ class SicoobSecurity implements ClientSecurity {
     required String certificateBase64String,
     required String certificatePassword,
   }) {
+    if (certificatePassword.isEmpty) {
+      return Failure(SicoobCertificateException.cannotBeEmpty(
+        'A Senha do Certificado está vazia ou não definida',
+      ));
+    }
+    if (certificateBase64String.isEmpty) {
+      return Failure(SicoobCertificateException.cannotBeEmpty(
+        'A String do Certificado está vazia ou não definida',
+      ));
+    }
+
     final certificateBytes =
         certificateStringToBytes(certificateBase64String).getOrThrow();
 

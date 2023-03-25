@@ -67,7 +67,7 @@ void main() {
 
       expect(result, isA<SicoobApiException>());
       expect(result!.message, isNotNull);
-      expect(result.message, contains('error'));
+      expect(result.message, contains('uncaughtMessage'));
     });
   });
 }

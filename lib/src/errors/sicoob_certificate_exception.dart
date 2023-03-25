@@ -4,6 +4,16 @@ import 'dart:io';
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 
+enum CertificateExceptionType {
+  incorrectCertificatePassword,
+  invalidPkcs12Certificate,
+  invalidCertificateBase64String,
+  certificateFilePathNotFound,
+  certificatePasswordCannotBeEmpty,
+  certificateStringCannotBeEmpty,
+  unknown,
+}
+
 /// Exception thrown when an error occurs with the certificate used for Pix
 class SicoobCertificateException implements PixException {
   final String _error;
@@ -49,6 +59,25 @@ class SicoobCertificateException implements PixException {
   }
 
   /// Creates a new [SicoobCertificateException] based on a [PathNotFoundException]
+  static PixException cannotBeEmpty(String error) {
+    if (error.contains('Certificate password cannot be empty')) {
+      return SicoobCertificateException(
+        error: 'A Senha do Certificado está vazia ou não definida',
+        type: CertificateExceptionType.certificatePasswordCannotBeEmpty,
+      );
+    } else if (error.contains('Certificate String cannot be empty')) {
+      return SicoobCertificateException(
+        error: 'A String do Certificado está vazia ou não definida',
+        type: CertificateExceptionType.certificateStringCannotBeEmpty,
+      );
+    } else {
+      return SicoobCertificateException(
+        error: error,
+        type: CertificateExceptionType.unknown,
+      );
+    }
+  }
+
   static PixException pathNotFoundException(
       PathNotFoundException pathNotFoundException) {
     return SicoobCertificateException(
@@ -56,12 +85,13 @@ class SicoobCertificateException implements PixException {
       type: CertificateExceptionType.certificateFilePathNotFound,
     );
   }
+
+  @override
+  String toString() => '''
+SicoobCertificateException:
+      error: $_error,
+      _type: $_type''';
 }
 
 /// The possible types of exceptions related to Sicoob certificates
-enum CertificateExceptionType {
-  incorrectCertificatePassword,
-  invalidPkcs12Certificate,
-  invalidCertificateBase64String,
-  certificateFilePathNotFound,
-}
+

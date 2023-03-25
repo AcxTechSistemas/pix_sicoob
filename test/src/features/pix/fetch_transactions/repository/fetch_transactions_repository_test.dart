@@ -13,6 +13,7 @@ void main() {
   late FetchTransactionsRepository fetchRepository;
   late Uri uri;
   late Token token;
+  const clientID = 'client-id';
   setUp(() {
     client = _MockClientService();
     fetchRepository = FetchTransactionsRepository(client);
@@ -31,6 +32,29 @@ void main() {
   });
 
   group('Consulta de Transações PIX', () {
+    test(r'''Caso o clientID esteja vazio ou não definido:
+              O Metodo deve retornar uma failure de SicoobApiException
+          ''', () async {
+      when(() => client.get(any(),
+              headers: any(named: 'headers'),
+              queryParameters: any(named: 'queryParameters')))
+          .thenAnswer((_) async => const Success({}));
+
+      final response = await fetchRepository.fetchTransactions(
+        token,
+        clientID: '',
+        uri: uri,
+      );
+
+      var result = response.exceptionOrNull();
+      expect(result, isA<SicoobApiException>());
+      expect(
+          result!.exceptionType,
+          equals(
+            ApiExceptionType.clientIDCannotBeEmpty,
+          ));
+    });
+
     test(r'''Response com 1 Pagina:
               O Metodo deve retornar uma lista de Transações PIX
               com todos os itens dessa pagina.
@@ -42,6 +66,7 @@ void main() {
 
       final response = await fetchRepository.fetchTransactions(
         token,
+        clientID: clientID,
         uri: uri,
       );
 
@@ -62,6 +87,7 @@ void main() {
 
       final response = await fetchRepository.fetchTransactions(
         token,
+        clientID: clientID,
         uri: uri,
       );
 
@@ -85,13 +111,17 @@ void main() {
               queryParameters: any(named: 'queryParameters')))
           .thenAnswer((_) async => Success(expectedResponse));
 
-      final response = await fetchRepository.fetchTransactions(token, uri: uri);
+      final response = await fetchRepository.fetchTransactions(
+        token,
+        clientID: clientID,
+        uri: uri,
+      );
 
       var result = response.exceptionOrNull();
 
       expect(result, isNotNull);
       expect(result, isA<SicoobApiException>());
-      expect(result!.exceptionType, equals(ApiErrorType.apiErrorType));
+      expect(result!.exceptionType, equals(ApiExceptionType.unknown));
     });
   });
 }

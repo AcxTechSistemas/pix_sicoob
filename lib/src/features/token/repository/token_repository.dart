@@ -24,6 +24,10 @@ class TokenRepository {
     required Uri uri,
     required String clientID,
   }) async {
+    if (clientID.isEmpty) {
+      return Failure(
+          SicoobApiException.apiError({'message': 'ClientID cannot be empty'}));
+    }
     final response = await _client.post(
       uri,
       body: {

@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 
 enum UnknownExceptionType {
@@ -38,4 +39,10 @@ class SicoobUnknownException implements PixException {
       type: UnknownExceptionType.unknown,
     );
   }
+
+  @override
+  String toString() => '''
+SicoobUnknownException:
+      error: $_error,
+      type: $_type''';
 }
