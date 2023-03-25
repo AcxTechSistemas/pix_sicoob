@@ -1,3 +1,7 @@
+## [1.1.3] - 24-03-2023
+
+- Improved error handling
+
 ## [1.1.2] - 24-03-2023
 
 - Removed unnecessary initializations in constructor and passed to class directly
