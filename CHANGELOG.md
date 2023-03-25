@@ -1,3 +1,7 @@
+## [1.1.1] - 24-03-2023
+
+- Performed necessary exports to create the instance of instabill
+
 ## [1.1.0] - 24-03-2023
 
 - Improved unit tests
