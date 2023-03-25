@@ -50,9 +50,6 @@ class PixSicoob {
   late SicoobSecurity _sicoobSecurity;
   late SecurityContext _securityContext;
   late ClientService _client;
-  late TokenRepository _tokenRepository;
-  late FetchTransactionsRepository _fetchRepository;
-  late InstaBillRepository _instaBillRepository;
 
   /// Constructor that initializes the necessary properties for the class.
   ///
@@ -75,9 +72,6 @@ class PixSicoob {
             certificatePassword: _certificatePassword)
         .getOrThrow();
     _client = SicoobClient(_securityContext);
-    _tokenRepository = TokenRepository(_client);
-    _fetchRepository = FetchTransactionsRepository(_client);
-    _instaBillRepository = InstaBillRepository(_client);
   }
 
   /// Constructor that delegates to the private constructor and initializes the necessary properties for the class.
@@ -103,7 +97,8 @@ class PixSicoob {
   ///
   /// Throws a [PixException] if there's an error while fetching the token.
   Future<Token> getToken() async {
-    final response = await _tokenRepository.getToken(
+    final repository = TokenRepository(_client);
+    final response = await repository.getToken(
       uri: _authUri,
       clientID: _clientID,
     );
@@ -123,7 +118,8 @@ class PixSicoob {
     required Token token,
     DateTimeRange? dateTimeRange,
   }) async {
-    final response = await _fetchRepository.fetchTransactions(
+    final repository = FetchTransactionsRepository(_client);
+    final response = await repository.fetchTransactions(
       token,
       uri: _apiUri,
       dateTimeRange: dateTimeRange,
@@ -138,7 +134,8 @@ class PixSicoob {
     required Token token,
     required InstaBill instaBill,
   }) async {
-    final response = await _instaBillRepository.createBilling(
+    final repository = InstaBillRepository(_client);
+    final response = await repository.createBilling(
       token: token,
       instaBill: instaBill,
       cobUri: _cobUri,

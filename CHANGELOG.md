@@ -1,3 +1,7 @@
+## [1.1.2] - 24-03-2023
+
+- Removed unnecessary initializations in constructor and passed to class directly
+
 ## [1.1.1] - 24-03-2023
 
 - Performed necessary exports to create the instance of instabill
