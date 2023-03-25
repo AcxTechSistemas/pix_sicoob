@@ -10,7 +10,7 @@ import 'package:pix_sicoob/src/features/token/model/token.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
 import 'package:result_dart/result_dart.dart';
 
-class MockClientService extends Mock implements ClientService {}
+class _MockClientService extends Mock implements ClientService {}
 
 void main() {
   late ClientService client;
@@ -20,7 +20,7 @@ void main() {
   late Uri cobUri;
 
   setUp(() {
-    client = MockClientService();
+    client = _MockClientService();
     instaBillRepository = InstaBillRepository(client);
 
     cobUri = Uri.parse('https://teste.example.com/cob');
@@ -47,27 +47,30 @@ void main() {
     });
   });
 
-  test('Deve retornar uma instancia de Billing ao criar uma cobranca imediata',
-      () async {
-    when(() => client.post(
-          any(),
-          body: any(named: 'body'),
-          headers: any(named: 'headers'),
-        )).thenAnswer(
-      (_) async => const Success(expectedResponse),
-    );
+  group('InstaBill: ', () {
+    test('''Ao enviar uma solicitacao de criação de cobrança imediata:
+O Metodo deve retornar uma instancia de Billing com os dados da cobranca''',
+        () async {
+      when(() => client.post(
+            any(),
+            body: any(named: 'body'),
+            headers: any(named: 'headers'),
+          )).thenAnswer(
+        (_) async => const Success(expectedResponse),
+      );
 
-    final response = await instaBillRepository
-        .createBilling(
-          cobUri: cobUri,
-          instaBill: instaBill,
-          token: token,
-        )
-        .getOrThrow();
-    expect(response.txid, isNotNull);
-    expect(response.calendario, isNotNull);
-    expect(response.infoAdicionais.length, 3);
-    expect(response.valor.original, isA<double>());
+      final response = await instaBillRepository
+          .createBilling(
+            cobUri: cobUri,
+            instaBill: instaBill,
+            token: token,
+          )
+          .getOrThrow();
+      expect(response.txid, isNotNull);
+      expect(response.calendario, isNotNull);
+      expect(response.infoAdicionais.length, 3);
+      expect(response.valor.original, isA<double>());
+    });
   });
 }
 

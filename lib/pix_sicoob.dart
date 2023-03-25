@@ -1,55 +1,31 @@
-/// A library for interacting with the Sicoob Pix API.
 library pix_sicoob;
 
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:pix_sicoob/src/features/pix/fetch_transactions/repository/fetch_transactions_repository.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/billing/billing.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/repository/insta_bill_repository.dart';
-import 'package:pix_sicoob/src/features/token/model/token.dart';
-import 'package:pix_sicoob/src/features/token/repository/token_repository.dart';
-import 'package:pix_sicoob/src/services/client_service.dart';
-import 'package:pix_sicoob/src/services/sicoob_client.dart';
-import 'package:pix_sicoob/src/services/sicoob_security.dart';
+import 'src/features/pix/fetch_transactions/repository/fetch_transactions_repository.dart';
+import 'src/features/cob/insta_bill/models/billing/billing.dart';
+import 'src/features/cob/insta_bill/repository/insta_bill_repository.dart';
+import 'src/features/pix/models/pix/pix.dart';
+import 'src/features/token/model/token.dart';
+import 'src/features/token/repository/token_repository.dart';
+import 'src/services/client_service.dart';
+import 'src/services/sicoob_client.dart';
+import 'src/services/sicoob_security.dart';
 import 'src/features/cob/insta_bill/models/insta_bill/insta_bill.dart';
-import 'src/shared/models/pix/pix.dart';
-export './pix_sicoob.dart';
-export './src/shared/models/pix/pix.dart';
 export 'src/features/cob/insta_bill/models/billing/billing.dart';
 export 'src/features/cob/insta_bill/models/insta_bill/insta_bill.dart';
+export 'src/features/pix/models/pix/pix.dart';
+export 'src/errors/pix_exception_interface.dart';
+export 'src/errors/sicoob_api_exception.dart';
+export 'src/errors/sicoob_certificate_exception.dart';
+export 'src/errors/sicoob_http_exception.dart';
+export 'src/errors/sicoob_unknown_exception.dart';
+export './pix_sicoob.dart';
 
-/// A class that provides an interface for communicating with the Sicoob PIX API.
+/// The main class that provides the Pix Sicoob API functionalities.
 ///
-/// The class handles:
-/// - Authentication
-/// - Token retrieval
-/// - Transaction retrieval
-/// - Bill creation.
-/// ```dart
-/// final PixSicoob pixSicoob = PixSicoob(
-/// clientID: 'YOUR_CLIENT_ID',
-/// certificateBase64String: 'YOUR_CERTIFICATE_BASE64_STRING',
-/// certificatePassword: 'YOUR_CERTIFICATE_PASSWORD',
-/// );
-///
-/// final Token token = await pixSicoob.getToken();
-///
-/// final List<Pix> transactions = await pixSicoob.fetchTransactions(
-/// token: token,
-/// dateTimeRange: DateTimeRange(
-/// start: DateTime.now().subtract(Duration(days: 7)),
-/// end: DateTime.now(),
-/// ));
-///
-/// final InstaBill instaBill = InstaBill(
-/// ... // populate fields
-/// );
-///
-/// final Billing billing = await pixSicoob.createBilling(
-/// token: token,
-/// instaBill: instaBill,
-/// );
-/// ```
+/// This class encapsulates the operations related to authentication, token management,
+/// transaction retrieval and billing creation.
 class PixSicoob {
   final String _clientID;
   final String _certificateBase64String;
@@ -74,6 +50,13 @@ class PixSicoob {
   late FetchTransactionsRepository _fetchRepository;
   late InstaBillRepository _instaBillRepository;
 
+  /// Constructor that initializes the necessary properties for the class.
+  ///
+  /// [clientID] is the client identifier for the API.
+  ///
+  /// [certificateBase64String] is the base64 encoded PKCS12 certificate for the client.
+  ///
+  /// [certificatePassword] is the password for the certificate.
   PixSicoob._({
     required String clientID,
     required String certificateBase64String,
@@ -93,6 +76,13 @@ class PixSicoob {
     _instaBillRepository = InstaBillRepository(_client);
   }
 
+  /// Constructor that delegates to the private constructor and initializes the necessary properties for the class.
+  ///
+  /// [clientID] is the client identifier for the API.
+  ///
+  /// [certificateBase64String] is the base64 encoded PKCS12 certificate for the client.
+  ///
+  /// [certificatePassword] is the password for the certificate.
   PixSicoob({
     required String clientID,
     required String certificateBase64String,
@@ -103,13 +93,11 @@ class PixSicoob {
           certificatePassword: certificatePassword,
         );
 
-  /// Retrieves an authentication token.
+  /// Retrieves a valid token from the API.
   ///
-  /// Example:
+  /// Returns a [Future] with a [Token] object representing the token.
   ///
-  /// ```dart
-  /// final Token token = await pixSicoob.getToken();
-  /// ```
+  /// Throws a [PixException] if there's an error while fetching the token.
   Future<Token> getToken() async {
     final response = await _tokenRepository.getToken(
       uri: _authUri,
@@ -118,22 +106,15 @@ class PixSicoob {
     return response.getOrThrow();
   }
 
-  /// Fetches the [Pix] transactions for a given token
+  /// Retrieves a list of transactions from the API.
   ///
-  /// This method takes the following parameters:
-  /// - A valid [Token] instance,
-  /// -  dateTimeRange The optional [DateTimeRange] to filter transactions.
-  /// If not provided by default returns the last 4 days transactions.
+  /// [token] is a valid [Token] object used for authentication.
   ///
-  /// Example:
-  /// ```dart
-  /// final List<Pix> transactions = await pixSicoob.fetchTransactions(
-  /// token: token,
-  /// dateTimeRange: DateTimeRange(
-  /// start: DateTime.now().subtract(Duration(days: 7)),
-  /// end: DateTime.now(),
-  /// ));
-  /// ```
+  /// [dateTimeRange] is an optional [DateTimeRange] object representing the range of dates to retrieve transactions from.
+  ///
+  /// Returns a [Future] with a [List] of [Pix] objects representing the transactions.
+  ///
+  /// Throws a [PixException] if there's an error while fetching the transactions.
   Future<List<Pix>> fetchTransactions({
     required Token token,
     DateTimeRange? dateTimeRange,
@@ -146,24 +127,9 @@ class PixSicoob {
     return response.getOrThrow();
   }
 
-  /// Creates a new billing on the server.
+  /// Creates a new billing with the given [token] and [instaBill] parameters.
   ///
-  /// This method takes the following parameters:
-  /// - A valid [Token] instance,
-  /// - A valid [InstaBill] instance,
-  ///
-  /// Example:
-  ///
-  /// ```dart
-  /// final InstaBill instaBill = InstaBill(
-  /// ... // populate fields
-  /// );
-  ///
-  /// final Billing billing = await pixSicoob.createBilling(
-  /// token: token,
-  /// instaBill: instaBill,
-  /// );
-  /// ```
+  /// Returns a [Billing] object on success or throws a [PixException] on failure.
   Future<Billing> createBilling({
     required Token token,
     required InstaBill instaBill,
@@ -176,9 +142,15 @@ class PixSicoob {
     return response.getOrThrow();
   }
 
+  /// Converts a PKCS12 certificate file to a base64 string.
+  ///
+  /// Returns the base64 string on success or throws a [PixException] on failure.
   static String certFileToBase64String({required File pkcs12CertificateFile}) {
-    return SicoobSecurity().certFileToBase64String(
+    final sicoobSecurity = SicoobSecurity();
+    final response = sicoobSecurity.certFileToBase64String(
       pkcs12CertificateFile: pkcs12CertificateFile,
     );
+
+    return response.getOrThrow();
   }
 }

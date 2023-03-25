@@ -1,26 +1,26 @@
-import 'package:pix_sicoob/src/error/pix_error.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
+import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
 import 'package:pix_sicoob/src/features/token/model/token.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
 import 'package:result_dart/result_dart.dart';
 
-///A repository class that handles the retrieval of tokens from the server.
+/// The repository responsible for retrieving and managing tokens.
 ///
-///The [TokenRepository] class requires a [ClientService] instance to communicate with the server.
+/// This class interacts with the [ClientService] to make API requests and return
+/// results wrapped in [Result] objects containing either a [Token] or a [PixException].
 class TokenRepository {
-  ///The [ClientService] instance used to communicate with the server.
   final ClientService _client;
 
   TokenRepository(ClientService client) : _client = client;
 
-  /// Retrieves a token from the server by sending a POST request to the specified [uri] with the [clientID]  .
+  /// Retrieve a token from the specified [uri] using the provided [clientID].
   ///
-  /// If the request is successful and contains an access token, the token is returned in a [Success] of [Token].
+  /// The API request is made through the [_client] service and the response is
+  /// parsed into a [Token] object or an appropriate [PixException].
   ///
-  /// If the request fails or does not contain an access token, a [Failure] Result with a [PixError] is returned.
-  ///
-  /// - [uri] The [Uri] of the server to send the POST request to.
-  /// - [clientID] The ID of the client that is requesting the token.
-  Future<Result<Token, PixError>> getToken({
+  /// Returns a [Future] containing a [Result] object with either a [Token] or
+  /// a [PixException].
+  Future<Result<Token, PixException>> getToken({
     required Uri uri,
     required String clientID,
   }) async {
@@ -39,10 +39,10 @@ class TokenRepository {
         var token = Token.fromMap(success);
         return Success(token);
       } else {
-        return Failure(PixError(success));
+        return Failure(SicoobApiException.apiError(success));
       }
     }, (failure) {
-      return Failure(PixError(failure.toString()));
+      return Failure(failure);
     });
   }
 }

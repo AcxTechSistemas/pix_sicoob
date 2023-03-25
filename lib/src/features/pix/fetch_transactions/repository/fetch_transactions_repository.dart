@@ -1,38 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pix_sicoob/src/error/pix_error.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
+import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
+import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
 import 'package:result_dart/result_dart.dart';
-import '../../../../shared/models/pix/parametros.dart';
-import '../../../../shared/models/pix/pix.dart';
 import '../../../token/model/token.dart';
+import '../../models/pix/parametros.dart';
+import '../../models/pix/pix.dart';
 
-/// A repository class that handles fetching transactions for Pix payments.
-///
-/// The [FetchRepository] class has a constructor that requires the following parameters:
-/// - [client]: an instance of [ClientService] that will be used to make requests.
+/// A repository for fetching Pix transactions from the Sicoob API.
 class FetchTransactionsRepository {
-  /// An instance of [ClientService] that will be used to make requests
+  /// Instance of the [ClientService] used to make API calls
   final ClientService _client;
 
-  /// The [Parametros] object used to store pagination parameters for the API call.
+  /// Instance of the [ClientService] used to make API calls
   late Parametros _parametros;
 
-  /// Constructor for [FetchTransactionsRepository] that takes in a [ClientService] instance.
+  /// Constructor for [FetchTransactionsRepository] that receives a [ClientService]
   FetchTransactionsRepository(ClientService client) : _client = client;
 
-  /// Fetches the [Pix] transactions
+  /// Method that fetches transactions from the Pix API and returns a [Result] object
   ///
-  /// This method takes the following parameters:
+  /// The [token] parameter is a [Token] object containing the access token and token type
+  /// The [uri] parameter is the [Uri] endpoint for fetching transactions
+  /// The [dateTimeRange] parameter is an optional [DateTimeRange] used to filter the transactions by date
   ///
-  /// - [token] a [Token] representing the Token object
-  /// - [uri] a [Uri] representing the uri to the Pix Api
-  /// - [dateTimeRange] a [DateTimeRange] object used to specify the date range of the
-  ///   transactions to be fetched.
-  ///
-  /// This method returns a [Future] of [Result<List<Pix>, PixError>>],
-
-  Future<Result<List<Pix>, PixError>> fetchTransactions(
+  /// Returns a [Success] object containing a list of [Pix] objects if successful
+  /// Returns a [Failure] object containing a [PixException] if unsuccessful
+  Future<Result<List<Pix>, PixException>> fetchTransactions(
     Token token, {
     required Uri uri,
     DateTimeRange? dateTimeRange,
@@ -68,20 +64,21 @@ class FetchTransactionsRepository {
         final reversedList = pixTransactions.reversed.toList();
         return Success(reversedList);
       }
-    } on PixError catch (e) {
+    } on PixException catch (e) {
       return Failure(e);
     }
   }
 
-  /// Retrieves the [Pix] transactions within a specific date range.
+  /// Private method that makes the API call and returns a map of the response
   ///
-  /// This method takes the following parameters:
-  /// - [token] a [Token] representing the Token object
-  /// - [uri] a [Uri] representing the uri to the Pix Api
-  /// - [dateTimeRange] a [DateTimeRange] object used to specify the date range of the
-  ///   transactions to be fetched.
+  /// The [token] parameter is a [Token] object containing the access token and token type
+  /// The [uri] parameter is the [Uri] endpoint for fetching transactions
+  /// The [dateTimeRange] parameter is an optional [DateTimeRange] used to filter the transactions by date
+  /// The [paginaAtual] parameter is an optional [String] used to specify the page number of the transaction results
   ///
-  /// This method returns a [Future] of [Map<String, dynamic>],
+  /// Returns a [Map] containing the response from the API call
+  ///
+  /// Throws a [SicoobApiException] or [SicoobUnknownException] if there's an error making the API call
   Future<Map<String, dynamic>> _callApi(
     Token token, {
     required Uri uri,
@@ -109,21 +106,19 @@ class FetchTransactionsRepository {
       if (success.containsKey('pix')) {
         return success;
       } else {
-        throw PixError(success);
+        throw SicoobApiException.apiError(success);
       }
     }, (failure) {
-      throw PixError(failure);
+      throw SicoobUnknownException.unknownException(failure);
     });
   }
 }
 
-/// Formats the given date to the ISO 8601 format with a fixed timezone offset of -03:00.
+/// Private method that formats a [DateTime] object to ISO 8601 format with time zone information
 ///
-/// This method takes the following parameters:
+/// The [date] parameter is a [DateTime] object to be formatted
 ///
-/// - [DateTime] a [date] representing the date to format
-///
-/// This method returns a [String],
+/// Returns a [String] containing the formatted date string
 String formatToIso8601TimeZone({required DateTime date}) {
   String toIso8601TimeZone =
       DateFormat('yyyy-MM-ddThh:mm:ss.00-03:00').format(date);
