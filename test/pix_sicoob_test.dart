@@ -6,10 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pix_sicoob/pix_sicoob.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/insta_bill/calendario.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/devedor.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/info_adicionais.dart';
-import 'package:pix_sicoob/src/features/cob/insta_bill/models/shared/valor.dart';
 import 'package:pix_sicoob/src/features/token/model/token.dart';
 
 void main() {
