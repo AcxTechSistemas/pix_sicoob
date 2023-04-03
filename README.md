@@ -242,18 +242,9 @@ final listPix = await pixSicoob.fetchTransactions(
 
 try {
   // Code that may throw an exception
-} on SicoobApiException catch (e) {
-  // Handle error response from Sicoob API
-  print('Sicoob API error: ${e.message}');
-} on SicoobCertificateException catch (e) {
-  // Handle error with Pix certificate
-  print('Pix certificate error: ${e.message}');
-} on SicoobHttpException catch (e) {
-  // Handle HTTP request error
-  print('HTTP request error: ${e.message}');
-} on SicoobUnknownException catch (e) {
-  // Handle unknown error
-  print('Unknown error: ${e.message}');
+} on PixException catch (e) {
+  // Handle error response for this package
+  print('Pix Sicoob error: ${e.message}');
 } catch (e) {
   // Handle other types of exceptions
   print('Unexpected error: $e');

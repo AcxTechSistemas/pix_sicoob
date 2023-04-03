@@ -22,7 +22,7 @@ class SicoobHttpException implements PixException {
   ///
   /// [exception] is the underlying exception that caused the HTTP request to fail.
   static PixException httpException(Object exception) {
-    return PixException(
+    return SicoobHttpException(
       error: exception.toString(),
       errorData: {'error': '$exception'},
     );

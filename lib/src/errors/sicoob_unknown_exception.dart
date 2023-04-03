@@ -1,10 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 
-enum UnknownExceptionType {
-  unknown,
-}
-
 /// An exception that represents an unknown error in the Pix Sicoob API.
 ///
 /// This exception can be used to wrap any kind of error that cannot be classified
@@ -33,7 +29,7 @@ class SicoobUnknownException implements PixException {
   /// Creates a new [PixException] from the given [e] object, wrapping it in a
   /// [SicoobUnknownException] with [_error] equal to [e.toString()] and [_type]
   static PixException unknownException(dynamic e) {
-    return PixException(
+    return SicoobUnknownException(
       error: 'Unknown Error',
       errorData: {'error': '$e'},
     );

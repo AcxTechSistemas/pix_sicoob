@@ -26,12 +26,12 @@ class SicoobCertificateException implements PixException {
   static PixException tlsException(TlsException tlsException) {
     final osErrorMessage = tlsException.osError?.message ?? '';
     if (osErrorMessage.contains('INCORRECT_PASSWORD')) {
-      return PixException(
+      return SicoobCertificateException(
         error: 'A Senha do certificado está incorreta',
         errorData: {'error': 'the-certificate-password-is-incorrect'},
       );
     } else if (osErrorMessage.contains('BAD_PKCS12_DATA')) {
-      return PixException(
+      return SicoobCertificateException(
         error: 'Certificado e inválido',
         errorData: {'error': 'invalid-certificate-file'},
       );
@@ -42,7 +42,7 @@ class SicoobCertificateException implements PixException {
 
   /// Creates a new [SicoobCertificateException] based on a [FormatException]
   static PixException formatException(FormatException formatException) {
-    return PixException(
+    return SicoobCertificateException(
       error: 'O Certificado em Base64 String é invalido',
       errorData: {'error': 'invalid-certificate-base64string'},
     );
@@ -51,17 +51,17 @@ class SicoobCertificateException implements PixException {
   /// Creates a new [SicoobCertificateException] based on a [PathNotFoundException]
   static PixException cannotBeEmpty(String error) {
     if (error.contains('Certificate password cannot be empty')) {
-      return PixException(
+      return SicoobCertificateException(
         error: 'A Senha do Certificado está vazia ou não definida',
         errorData: {'error': 'empty-certificate-password'},
       );
     } else if (error.contains('Certificate Base64string cannot be empty')) {
-      return PixException(
+      return SicoobCertificateException(
         error: 'A String em Base64 do Certificado está vazia ou não definida',
         errorData: {'error': 'empty-certificate-base64string'},
       );
     } else {
-      return PixException(
+      return SicoobCertificateException(
         error: 'Unknown error',
         errorData: {'error': error},
       );
@@ -70,7 +70,7 @@ class SicoobCertificateException implements PixException {
 
   static PixException pathNotFoundException(
       PathNotFoundException pathNotFoundException) {
-    return PixException(
+    return SicoobCertificateException(
       error: 'Não foi possivel encontrar o caminho do certificado',
       errorData: {'error': 'could-not-find-the-certificate-path'},
     );
