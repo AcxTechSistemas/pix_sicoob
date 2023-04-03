@@ -36,7 +36,11 @@ class FetchTransactionsRepository {
   }) async {
     if (clientID.isEmpty) {
       return Failure(SicoobApiException.apiError(
-          {'message': 'client-id-cannot-be-empty'}));
+        {
+          'error': 'client-id-cannot-be-empty',
+          'errorDescription': 'O ID do cliente não pode estar vazio',
+        },
+      ));
     }
     List<Pix> pixTransactions = [];
     try {

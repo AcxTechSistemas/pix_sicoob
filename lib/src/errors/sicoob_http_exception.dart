@@ -4,31 +4,31 @@ import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 class SicoobHttpException implements PixException {
   final String _error;
 
-  final Map<String, dynamic>? _errorData;
+  final String _errorDescription;
 
   SicoobHttpException({
     required String error,
-    required Map<String, dynamic>? errorData,
+    required String errorDescription,
   })  : _error = error,
-        _errorData = errorData;
+        _errorDescription = errorDescription;
 
   @override
-  Map<String, dynamic>? get errorData => _errorData;
+  String get error => _error;
 
   @override
-  String get message => _error;
+  String get errorDescription => _errorDescription;
 
   /// Factory method for creating an instance of [SicoobHttpException].
   ///
   /// [exception] is the underlying exception that caused the HTTP request to fail.
   static PixException httpException(Object exception) {
     return SicoobHttpException(
-      error: exception.toString(),
-      errorData: {'error': '$exception'},
+      error: 'network-error',
+      errorDescription: exception.toString(),
     );
   }
 
   @override
   String toString() =>
-      'SicoobHttpException: error: $_error,  errorData: $_errorData';
+      'SicoobHttpException: error: $error,  errorData: $errorDescription';
 }

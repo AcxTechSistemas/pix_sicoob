@@ -33,26 +33,28 @@ void main() {
     });
 
     test(r'''Caso a senha do certificado esteja incorreta:
-    Deverá retornar um SicoobCertificateException do tipo: incorrectCertificatePassword''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.getContext(
         certificateBase64String: certificateBase64String,
         certificatePassword: '123',
       );
 
       final result = response.exceptionOrNull();
+      expect(result, isNotNull);
+      expect(result!.error, equals('the-certificate-password-is-incorrect'));
       expect(result, isA<PixException>());
     });
 
     test(r'''Caso o certificado seja invalido:
-    Deverá retornar um SicoobCertificateException do tipo: invalidPkcs12Certificate''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.getContext(
         certificateBase64String: '${certificateBase64String}1123',
         certificatePassword: '1234',
       );
 
       final result = response.exceptionOrNull();
+      expect(result, isNotNull);
+      expect(result!.error, equals('invalid-certificate-file'));
       expect(result, isA<PixException>());
     });
 
@@ -67,22 +69,25 @@ void main() {
     });
 
     test(r'''Caso o certificado em base64String seja invalido:
-    Deverá retornar um SicoobCertificateException do tipo: invalidCertificateBase64String''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.certificateStringToBytes(
         '$certificateBase64String unk',
       );
 
       final result = response.exceptionOrNull();
+      expect(result, isNotNull);
+      expect(result!.error, equals('invalid-certificate-base64string'));
       expect(result, isA<PixException>());
     });
 
     test(r'''Caso certificado não for encontrado:
-    Deverá retornar um SicoobCertificateException do tipo: certificateFilePathNotFound''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.certFileToBase64String(
           pkcs12CertificateFile: File('invalidPath'));
       final result = response.exceptionOrNull();
+
+      expect(result, isNotNull);
+      expect(result!.error, equals('could-not-find-the-certificate-path'));
       expect(result, isA<PixException>());
     });
   });

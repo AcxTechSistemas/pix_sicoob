@@ -66,8 +66,8 @@ void main() {
       var result = response.exceptionOrNull();
 
       expect(result, isA<SicoobApiException>());
-      expect(result!.message, isNotNull);
-      expect(result.message, contains('uncaughtMessage'));
+      expect(result!.error, isNotNull);
+      expect(result.error, contains('type'));
     });
   });
 }

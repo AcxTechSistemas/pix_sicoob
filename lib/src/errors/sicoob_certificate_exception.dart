@@ -8,32 +8,32 @@ import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 class SicoobCertificateException implements PixException {
   final String _error;
 
-  final Map<String, dynamic>? _errorData;
+  final String _errorDescription;
 
   SicoobCertificateException({
     required String error,
-    required Map<String, dynamic>? errorData,
+    required String errorDescription,
   })  : _error = error,
-        _errorData = errorData;
+        _errorDescription = errorDescription;
 
   @override
-  dynamic get message => _error;
+  String get error => _error;
 
   @override
-  Map<String, dynamic>? get errorData => _errorData;
+  String get errorDescription => _errorDescription;
 
   /// Creates a new [SicoobCertificateException] based on a [TlsException]
   static PixException tlsException(TlsException tlsException) {
     final osErrorMessage = tlsException.osError?.message ?? '';
     if (osErrorMessage.contains('INCORRECT_PASSWORD')) {
       return SicoobCertificateException(
-        error: 'A Senha do certificado está incorreta',
-        errorData: {'error': 'the-certificate-password-is-incorrect'},
+        error: 'the-certificate-password-is-incorrect',
+        errorDescription: 'A Senha do certificado está incorreta',
       );
     } else if (osErrorMessage.contains('BAD_PKCS12_DATA')) {
       return SicoobCertificateException(
-        error: 'Certificado e inválido',
-        errorData: {'error': 'invalid-certificate-file'},
+        error: 'invalid-certificate-file',
+        errorDescription: 'O Arquivo do certificado e inválido',
       );
     } else {
       return SicoobUnknownException.unknownException(tlsException);
@@ -43,8 +43,8 @@ class SicoobCertificateException implements PixException {
   /// Creates a new [SicoobCertificateException] based on a [FormatException]
   static PixException formatException(FormatException formatException) {
     return SicoobCertificateException(
-      error: 'O Certificado em Base64 String é invalido',
-      errorData: {'error': 'invalid-certificate-base64string'},
+      error: 'invalid-certificate-base64string',
+      errorDescription: 'A string base64 do certificado é inválida',
     );
   }
 
@@ -52,18 +52,18 @@ class SicoobCertificateException implements PixException {
   static PixException cannotBeEmpty(String error) {
     if (error.contains('Certificate password cannot be empty')) {
       return SicoobCertificateException(
-        error: 'A Senha do Certificado está vazia ou não definida',
-        errorData: {'error': 'empty-certificate-password'},
+        error: 'empty-certificate-password',
+        errorDescription: 'A Senha do Certificado está vazia ou não definida',
       );
     } else if (error.contains('Certificate Base64string cannot be empty')) {
       return SicoobCertificateException(
-        error: 'A String em Base64 do Certificado está vazia ou não definida',
-        errorData: {'error': 'empty-certificate-base64string'},
+        error: 'empty-certificate-base64string',
+        errorDescription: 'A string base64 do certificado está vazia',
       );
     } else {
       return SicoobCertificateException(
-        error: 'Unknown error',
-        errorData: {'error': error},
+        error: 'unknown-certificate-error',
+        errorDescription: error,
       );
     }
   }
@@ -71,12 +71,12 @@ class SicoobCertificateException implements PixException {
   static PixException pathNotFoundException(
       PathNotFoundException pathNotFoundException) {
     return SicoobCertificateException(
-      error: 'Não foi possivel encontrar o caminho do certificado',
-      errorData: {'error': 'could-not-find-the-certificate-path'},
+      error: 'could-not-find-the-certificate-path',
+      errorDescription: 'O caminho para o certificado não pôde ser encontrado',
     );
   }
 
   @override
   String toString() =>
-      'SicoobCertificateException: error: $_error, errorData: $_errorData';
+      'SicoobCertificateException: error: $error, errorData: $errorDescription';
 }

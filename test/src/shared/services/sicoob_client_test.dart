@@ -53,7 +53,7 @@ void main() {
     });
 
     test(r'''Em caso de erro na chamada HTTP:
-    Deverá retornar um SicoobHttpException do tipo: networkError''', () async {
+    Deverá retornar um PixException''', () async {
       when(() => mockIOClient.get(any(), headers: any(named: 'headers')))
           .thenThrow((_) async => Exception('Erro ao requisitar a API'));
 
@@ -89,7 +89,7 @@ void main() {
     });
 
     test(r'''Em caso de erro na chamada HTTP:
-    Deverá retornar um SicoobHttpException do tipo: networkError''', () async {
+    Deverá retornar uma PixExceptin''', () async {
       when(() => mockIOClient.post(any(),
               headers: any(named: 'headers'), body: any(named: 'body')))
           .thenThrow((_) async => Exception('Erro ao requisitar a API'));
@@ -102,7 +102,6 @@ void main() {
       final result = response.exceptionOrNull();
 
       expect(result, isNotNull);
-      print(result?.message);
       expect(result, isA<PixException>());
     });
   });

@@ -26,7 +26,11 @@ class TokenRepository {
   }) async {
     if (clientID.isEmpty) {
       return Failure(SicoobApiException.apiError(
-          {'message': 'client-id-cannot-be-empty'}));
+        {
+          'error': 'client-id-cannot-be-empty',
+          'errorDescription': 'Identificador do cliente não pode ser vazio',
+        },
+      ));
     }
     final response = await _client.post(
       uri,

@@ -4,44 +4,35 @@ import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 class SicoobApiException implements PixException {
   final String _error;
 
-  final Map<String, dynamic> _errorData;
+  final String _errorDescription;
 
   SicoobApiException({
     required String error,
-    required Map<String, dynamic> errorData,
+    required String errorDescription,
   })  : _error = error,
-        _errorData = errorData;
+        _errorDescription = errorDescription;
 
   /// The error message returned by the API.
   @override
-  dynamic get message => _error;
+  String get error => _error;
 
-  /// The error data returned by the API.
+  /// Gets the information of this exception.
   @override
-  Map<String, dynamic> get errorData => _errorData;
+  String get errorDescription => _errorDescription;
 
   /// Creates a new [PixException] instance for an API error with the given [error].
   static PixException apiError(Map<String, dynamic> errorMap) {
-    String errorMessage = 'sicoobApiError';
-    if (errorMap.containsKey('error')) {
-      errorMessage = errorMap['error'];
-    } else if (errorMap.containsKey('message')) {
-      errorMessage = errorMap['message'];
-      if (errorMessage.contains('client-id-cannot-be-empty')) {
-        return SicoobApiException(
-          error: 'ClientID está vazio ou não definido',
-          errorData: errorMap,
-        );
-      }
-    }
+    String error = errorMap['error'] ?? 'uncaughtError';
+    String errorDescription =
+        errorMap['error_description'] ?? errorMap.toString();
 
     return SicoobApiException(
-      error: errorMessage,
-      errorData: errorMap,
+      error: error,
+      errorDescription: errorDescription,
     );
   }
 
   @override
   String toString() =>
-      'SicoobApiException: error: $_error,  errorData: $_errorData';
+      'SicoobApiException: error: $error,  errorData: $errorDescription';
 }
