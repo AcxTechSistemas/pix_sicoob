@@ -55,9 +55,9 @@ class SicoobCertificateException implements PixException {
         error: 'A Senha do Certificado está vazia ou não definida',
         errorData: {'error': 'empty-certificate-password'},
       );
-    } else if (error.contains('Certificate String cannot be empty')) {
+    } else if (error.contains('Certificate Base64string cannot be empty')) {
       return PixException(
-        error: 'A String do Certificado está vazia ou não definida',
+        error: 'A String em Base64 do Certificado está vazia ou não definida',
         errorData: {'error': 'empty-certificate-base64string'},
       );
     } else {
