@@ -1,10 +1,14 @@
+## [1.1.4] - 03-04-2023
+
+- Downgrade min intl version
+
 ## [1.1.3] - 24-03-2023
 
 - Improved error handling
 
 ## [1.1.2] - 24-03-2023
 
-- Removed unnecessary initializations in constructor and passed to class directly
+- Removed unnecessary initializations in constructor and passed to class directl
 
 ## [1.1.1] - 24-03-2023
 
