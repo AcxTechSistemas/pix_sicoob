@@ -13,14 +13,14 @@ enum UnknownExceptionType {
 class SicoobUnknownException implements PixException {
   final dynamic _error;
 
-  final UnknownExceptionType _type;
+  final Map<String, dynamic> _errorData;
 
   /// Creates a new [SicoobUnknownException] with the given [_error] object and [_type].
   const SicoobUnknownException({
     required dynamic error,
-    required UnknownExceptionType type,
+    required Map<String, dynamic> errorData,
   })  : _error = error,
-        _type = type;
+        _errorData = errorData;
 
   /// The error message returned.
   @override
@@ -28,21 +28,18 @@ class SicoobUnknownException implements PixException {
 
   /// The type of exception, which in this case is always [UnknownExceptionType.unknown].
   @override
-  Enum get exceptionType => _type;
+  Map<String, dynamic> get errorData => _errorData;
 
   /// Creates a new [PixException] from the given [e] object, wrapping it in a
   /// [SicoobUnknownException] with [_error] equal to [e.toString()] and [_type]
-  /// equal to [UnknownExceptionType.unknown].
   static PixException unknownException(dynamic e) {
-    return SicoobUnknownException(
-      error: e.toString(),
-      type: UnknownExceptionType.unknown,
+    return PixException(
+      error: 'Unknown Error',
+      errorData: {'error': '$e'},
     );
   }
 
   @override
-  String toString() => '''
-SicoobUnknownException:
-      error: $_error,
-      type: $_type''';
+  String toString() =>
+      'SicoobUnknownException: error: $_error, errorData: $_errorData';
 }

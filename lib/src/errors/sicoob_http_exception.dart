@@ -1,26 +1,19 @@
-// ignore_for_file:  sort_constructors_first
-// ignore_for_file: public_member_api_docs
-
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
-
-enum HttpExceptionType {
-  networkError,
-}
 
 /// Exception thrown when an HTTP request fails.
 class SicoobHttpException implements PixException {
   final String _error;
 
-  final HttpExceptionType _type;
+  final Map<String, dynamic>? _errorData;
 
   SicoobHttpException({
     required String error,
-    required HttpExceptionType type,
+    required Map<String, dynamic>? errorData,
   })  : _error = error,
-        _type = type;
+        _errorData = errorData;
 
   @override
-  Enum get exceptionType => _type;
+  Map<String, dynamic>? get errorData => _errorData;
 
   @override
   String get message => _error;
@@ -29,15 +22,13 @@ class SicoobHttpException implements PixException {
   ///
   /// [exception] is the underlying exception that caused the HTTP request to fail.
   static PixException httpException(Object exception) {
-    return SicoobHttpException(
+    return PixException(
       error: exception.toString(),
-      type: HttpExceptionType.networkError,
+      errorData: {'error': '$exception'},
     );
   }
 
   @override
-  String toString() => '''
-SicoobHttpException:
-      error: $_error, 
-      type: $_type''';
+  String toString() =>
+      'SicoobHttpException: error: $_error,  errorData: $_errorData';
 }

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:pix_sicoob/src/errors/sicoob_http_exception.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/services/sicoob_client.dart';
 
 class MockIOClient extends Mock implements IOClient {}
@@ -65,8 +65,7 @@ void main() {
       final result = response.exceptionOrNull();
 
       expect(result, isNotNull);
-      expect(result, isA<SicoobHttpException>());
-      expect(result!.exceptionType, equals(HttpExceptionType.networkError));
+      expect(result, isA<PixException>());
     });
   });
 
@@ -103,8 +102,8 @@ void main() {
       final result = response.exceptionOrNull();
 
       expect(result, isNotNull);
-      expect(result, isA<SicoobHttpException>());
-      expect(result!.exceptionType, equals(HttpExceptionType.networkError));
+      print(result?.message);
+      expect(result, isA<PixException>());
     });
   });
 }

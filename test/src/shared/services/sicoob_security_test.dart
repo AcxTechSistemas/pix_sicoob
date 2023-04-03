@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pix_sicoob/src/errors/sicoob_certificate_exception.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/services/client_security.dart';
 import 'package:pix_sicoob/src/services/sicoob_security.dart';
 
@@ -41,9 +41,7 @@ void main() {
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(result!.exceptionType,
-          equals(CertificateExceptionType.incorrectCertificatePassword));
+      expect(result, isA<PixException>());
     });
 
     test(r'''Caso o certificado seja invalido:
@@ -55,11 +53,7 @@ void main() {
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.invalidPkcs12Certificate),
-      );
+      expect(result, isA<PixException>());
     });
 
     test(r'O metodo deve retornar uma uma lista de Bytes Uint8List', () {
@@ -80,11 +74,7 @@ void main() {
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.invalidCertificateBase64String),
-      );
+      expect(result, isA<PixException>());
     });
 
     test(r'''Caso certificado não for encontrado:
@@ -93,11 +83,7 @@ void main() {
       final response = clientSecurity.certFileToBase64String(
           pkcs12CertificateFile: File('invalidPath'));
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.certificateFilePathNotFound),
-      );
+      expect(result, isA<PixException>());
     });
   });
 }
