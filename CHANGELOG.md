@@ -1,3 +1,7 @@
+## [1.1.5] - 03-04-2023
+
+- Improve error handling
+
 ## [1.1.4] - 03-04-2023
 
 - Downgrade min intl version

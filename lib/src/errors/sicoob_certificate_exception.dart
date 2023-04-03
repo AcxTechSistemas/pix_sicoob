@@ -37,12 +37,12 @@ class SicoobCertificateException implements PixException {
     final osErrorMessage = tlsException.osError?.message ?? '';
     if (osErrorMessage.contains('INCORRECT_PASSWORD')) {
       return SicoobCertificateException(
-        error: 'INCORRECT_PASSWORD',
+        error: 'A Senha do certificado está incorreta',
         type: CertificateExceptionType.incorrectCertificatePassword,
       );
     } else if (osErrorMessage.contains('BAD_PKCS12_DATA')) {
       return SicoobCertificateException(
-        error: 'BAD_PKCS12_DATA',
+        error: 'Este Certificado e inválido',
         type: CertificateExceptionType.invalidPkcs12Certificate,
       );
     } else {
@@ -53,7 +53,7 @@ class SicoobCertificateException implements PixException {
   /// Creates a new [SicoobCertificateException] based on a [FormatException]
   static PixException formatException(FormatException formatException) {
     return SicoobCertificateException(
-      error: 'INVALID_CERTIFICATE_BASE64STRING',
+      error: 'O Certificado em Base64 String é invalido',
       type: CertificateExceptionType.invalidCertificateBase64String,
     );
   }
@@ -81,7 +81,7 @@ class SicoobCertificateException implements PixException {
   static PixException pathNotFoundException(
       PathNotFoundException pathNotFoundException) {
     return SicoobCertificateException(
-      error: 'CERTIFICATE_FILE_PATH_NOT_FOUND',
+      error: 'Não foi possivel encontrar o caminho do certificado',
       type: CertificateExceptionType.certificateFilePathNotFound,
     );
   }
@@ -92,5 +92,3 @@ SicoobCertificateException:
       error: $_error,
       _type: $_type''';
 }
-
-/// The possible types of exceptions related to Sicoob certificates

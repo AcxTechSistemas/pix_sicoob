@@ -22,5 +22,5 @@ abstract class PixException implements Exception {
 
   /// Returns a string representation of this exception.
   @override
-  String toString() => 'PixError(error: $message)';
+  String toString() => 'PixError(error: $message type:$exceptionType)';
 }
