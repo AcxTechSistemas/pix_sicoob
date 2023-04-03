@@ -3,11 +3,11 @@ abstract class PixException implements Exception {
   /// The error that caused the exception.
   final dynamic _error;
 
-  /// The type of the exception.
+  /// The data of the exception.
   final Map<String, dynamic>? _errorData;
 
   /// Creates a new instance of the [PixException] class with the given error
-  /// and exception type.
+  /// and exception data.
   PixException({
     required dynamic error,
     required Map<String, dynamic>? errorData,

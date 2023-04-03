@@ -22,8 +22,10 @@ class SicoobApiException implements PixException {
 
   /// Creates a new [PixException] instance for an API error with the given [error].
   static PixException apiError(Map<String, dynamic> errorMap) {
-    String errorMessage = 'uncaughtMessage';
-    if (errorMap.containsKey('message')) {
+    String errorMessage = 'sicoobApiError';
+    if (errorMap.containsKey('error')) {
+      errorMessage = errorMap['error'];
+    } else if (errorMap.containsKey('message')) {
       errorMessage = errorMap['message'];
       if (errorMessage.contains('client-id-cannot-be-empty')) {
         return SicoobApiException(
