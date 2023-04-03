@@ -94,4 +94,3 @@ SicoobCertificateException:
 }
 
 /// The possible types of exceptions related to Sicoob certificates
-
