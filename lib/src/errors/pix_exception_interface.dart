@@ -1,5 +1,5 @@
 /// The base class for all exceptions related to the Pix feature.
-class PixException implements Exception {
+abstract class PixException implements Exception {
   /// The error that caused the exception.
   final dynamic _error;
 

@@ -25,7 +25,7 @@ class SicoobApiException implements PixException {
     String errorMessage = 'uncaughtMessage';
     if (errorMap.containsKey('message')) {
       errorMessage = errorMap['message'];
-      if (errorMessage.contains('ClientID cannot be empty')) {
+      if (errorMessage.contains('client-id-cannot-be-empty')) {
         return SicoobApiException(
           error: 'ClientID está vazio ou não definido',
           errorData: errorMap,

@@ -1,7 +1,7 @@
-// @Skip('''
-// These tests serve to test the package in production with real credentials,
-// and should not be tested outside the development environment.
-// ''')
+@Skip('''
+These tests serve to test the package in production with real credentials,
+and should not be tested outside the development environment.
+''')
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
