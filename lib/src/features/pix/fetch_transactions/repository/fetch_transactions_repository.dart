@@ -35,8 +35,12 @@ class FetchTransactionsRepository {
     DateTimeRange? dateTimeRange,
   }) async {
     if (clientID.isEmpty) {
-      return Failure(
-          SicoobApiException.apiError({'message': 'ClientID cannot be empty'}));
+      return Failure(SicoobApiException.apiError(
+        {
+          'error': 'client-id-cannot-be-empty',
+          'errorDescription': 'O ID do cliente não pode estar vazio',
+        },
+      ));
     }
     List<Pix> pixTransactions = [];
     try {

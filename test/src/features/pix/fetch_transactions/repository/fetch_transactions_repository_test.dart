@@ -48,11 +48,6 @@ void main() {
 
       var result = response.exceptionOrNull();
       expect(result, isA<SicoobApiException>());
-      expect(
-          result!.exceptionType,
-          equals(
-            ApiExceptionType.clientIDCannotBeEmpty,
-          ));
     });
 
     test(r'''Response com 1 Pagina:
@@ -121,7 +116,6 @@ void main() {
 
       expect(result, isNotNull);
       expect(result, isA<SicoobApiException>());
-      expect(result!.exceptionType, equals(ApiExceptionType.unknown));
     });
   });
 }

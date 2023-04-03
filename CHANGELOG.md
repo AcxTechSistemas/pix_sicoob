@@ -1,3 +1,7 @@
+## [1.1.6] - 03-04-2023
+
+- Removed enums in error handling
+
 ## [1.1.5] - 03-04-2023
 
 - Improve error handling

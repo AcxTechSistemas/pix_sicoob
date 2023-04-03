@@ -1,26 +1,27 @@
 /// The base class for all exceptions related to the Pix feature.
 abstract class PixException implements Exception {
   /// The error that caused the exception.
-  final dynamic _error;
+  final String _error;
 
-  /// The type of the exception.
-  final Enum _exceptionType;
+  /// The data of the exception.
+  final String _errorDescription;
 
   /// Creates a new instance of the [PixException] class with the given error
-  /// and exception type.
+  /// and exception data.
   PixException({
-    required dynamic error,
-    required Enum exceptionType,
+    required String errorDescription,
+    required String error,
   })  : _error = error,
-        _exceptionType = exceptionType;
+        _errorDescription = errorDescription;
 
   /// Gets the error message associated with this exception.
-  dynamic get message => _error;
+  String get error => _error;
 
-  /// Gets the type of this exception.
-  Enum get exceptionType => _exceptionType;
+  /// Gets the information of this exception.
+  String? get errorDescription => _errorDescription;
 
   /// Returns a string representation of this exception.
   @override
-  String toString() => 'PixError(error: $message type:$exceptionType)';
+  String toString() =>
+      'PixError(error: $error errorDescription:$errorDescription)';
 }

@@ -236,29 +236,16 @@ final listPix = await pixSicoob.fetchTransactions(
 
 ### **Handling errors**
 
-- This package provides several ways to handle errors that may occur.
+This package provides some ways to map and handle different types of errors,
+Below are some of the errors that can be encountered when using this package:
 
-```dart
-
-try {
-  // Code that may throw an exception
-} on SicoobApiException catch (e) {
-  // Handle error response from Sicoob API
-  print('Sicoob API error: ${e.message}');
-} on SicoobCertificateException catch (e) {
-  // Handle error with Pix certificate
-  print('Pix certificate error: ${e.message}');
-} on SicoobHttpException catch (e) {
-  // Handle HTTP request error
-  print('HTTP request error: ${e.message}');
-} on SicoobUnknownException catch (e) {
-  // Handle unknown error
-  print('Unknown error: ${e.message}');
-} catch (e) {
-  // Handle other types of exceptions
-  print('Unexpected error: $e');
-}
-```
+- **_the-certificate-password-is-incorrect_**: A senha do certificado está incorreta.
+- **_invalid-certificate-file_**: O arquivo de certificado é inválido
+- **_invalid-certificate-base64string_**: A string base64 do certificado é inválida
+- **_empty-certificate-password_**: A senha do certificado está vazia
+- **_empty-certificate-base64string_**: A string base64 do certificado está vazia
+- **_could-not-find-the-certificate-path_**: O caminho para o certificado não pôde ser encontrado
+- **_client-id-cannot-be-empty_**: O ID do cliente não pode estar vazio.
 
 <!-- CONTRIBUTING -->
 

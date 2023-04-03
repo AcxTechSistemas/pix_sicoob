@@ -56,7 +56,7 @@ class SicoobClient implements ClientService {
       var jsonBody = jsonDecode(response.body);
       return Success(jsonBody);
     } catch (e) {
-      return Failure(SicoobHttpException.httpException(e));
+      return Failure(SicoobHttpException.httpException(e.toString()));
     }
   }
 
@@ -80,7 +80,7 @@ class SicoobClient implements ClientService {
       var jsonBody = jsonDecode(response.body);
       return Success(jsonBody);
     } catch (e) {
-      return Failure(SicoobHttpException.httpException(e));
+      return Failure(SicoobHttpException.httpException(e.toString()));
     }
   }
 }

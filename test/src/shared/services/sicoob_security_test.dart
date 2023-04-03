@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pix_sicoob/src/errors/sicoob_certificate_exception.dart';
+import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/services/client_security.dart';
 import 'package:pix_sicoob/src/services/sicoob_security.dart';
 
@@ -33,33 +33,29 @@ void main() {
     });
 
     test(r'''Caso a senha do certificado esteja incorreta:
-    Deverá retornar um SicoobCertificateException do tipo: incorrectCertificatePassword''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.getContext(
         certificateBase64String: certificateBase64String,
         certificatePassword: '123',
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(result!.exceptionType,
-          equals(CertificateExceptionType.incorrectCertificatePassword));
+      expect(result, isNotNull);
+      expect(result!.error, equals('the-certificate-password-is-incorrect'));
+      expect(result, isA<PixException>());
     });
 
     test(r'''Caso o certificado seja invalido:
-    Deverá retornar um SicoobCertificateException do tipo: invalidPkcs12Certificate''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.getContext(
         certificateBase64String: '${certificateBase64String}1123',
         certificatePassword: '1234',
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.invalidPkcs12Certificate),
-      );
+      expect(result, isNotNull);
+      expect(result!.error, equals('invalid-certificate-file'));
+      expect(result, isA<PixException>());
     });
 
     test(r'O metodo deve retornar uma uma lista de Bytes Uint8List', () {
@@ -73,31 +69,26 @@ void main() {
     });
 
     test(r'''Caso o certificado em base64String seja invalido:
-    Deverá retornar um SicoobCertificateException do tipo: invalidCertificateBase64String''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.certificateStringToBytes(
         '$certificateBase64String unk',
       );
 
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.invalidCertificateBase64String),
-      );
+      expect(result, isNotNull);
+      expect(result!.error, equals('invalid-certificate-base64string'));
+      expect(result, isA<PixException>());
     });
 
     test(r'''Caso certificado não for encontrado:
-    Deverá retornar um SicoobCertificateException do tipo: certificateFilePathNotFound''',
-        () {
+    Deverá retornar uma PixException''', () {
       final response = clientSecurity.certFileToBase64String(
           pkcs12CertificateFile: File('invalidPath'));
       final result = response.exceptionOrNull();
-      expect(result, isA<SicoobCertificateException>());
-      expect(
-        result!.exceptionType,
-        equals(CertificateExceptionType.certificateFilePathNotFound),
-      );
+
+      expect(result, isNotNull);
+      expect(result!.error, equals('could-not-find-the-certificate-path'));
+      expect(result, isA<PixException>());
     });
   });
 }

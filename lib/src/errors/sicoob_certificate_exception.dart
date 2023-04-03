@@ -4,46 +4,36 @@ import 'dart:io';
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 
-enum CertificateExceptionType {
-  incorrectCertificatePassword,
-  invalidPkcs12Certificate,
-  invalidCertificateBase64String,
-  certificateFilePathNotFound,
-  certificatePasswordCannotBeEmpty,
-  certificateStringCannotBeEmpty,
-  unknown,
-}
-
 /// Exception thrown when an error occurs with the certificate used for Pix
 class SicoobCertificateException implements PixException {
   final String _error;
 
-  final CertificateExceptionType _type;
+  final String _errorDescription;
 
   SicoobCertificateException({
     required String error,
-    required CertificateExceptionType type,
+    required String errorDescription,
   })  : _error = error,
-        _type = type;
+        _errorDescription = errorDescription;
 
   @override
-  dynamic get message => _error;
+  String get error => _error;
 
   @override
-  Enum get exceptionType => _type;
+  String get errorDescription => _errorDescription;
 
   /// Creates a new [SicoobCertificateException] based on a [TlsException]
   static PixException tlsException(TlsException tlsException) {
     final osErrorMessage = tlsException.osError?.message ?? '';
     if (osErrorMessage.contains('INCORRECT_PASSWORD')) {
       return SicoobCertificateException(
-        error: 'A Senha do certificado está incorreta',
-        type: CertificateExceptionType.incorrectCertificatePassword,
+        error: 'the-certificate-password-is-incorrect',
+        errorDescription: 'A Senha do certificado está incorreta',
       );
     } else if (osErrorMessage.contains('BAD_PKCS12_DATA')) {
       return SicoobCertificateException(
-        error: 'Este Certificado e inválido',
-        type: CertificateExceptionType.invalidPkcs12Certificate,
+        error: 'invalid-certificate-file',
+        errorDescription: 'O Arquivo do certificado e inválido',
       );
     } else {
       return SicoobUnknownException.unknownException(tlsException);
@@ -53,8 +43,8 @@ class SicoobCertificateException implements PixException {
   /// Creates a new [SicoobCertificateException] based on a [FormatException]
   static PixException formatException(FormatException formatException) {
     return SicoobCertificateException(
-      error: 'O Certificado em Base64 String é invalido',
-      type: CertificateExceptionType.invalidCertificateBase64String,
+      error: 'invalid-certificate-base64string',
+      errorDescription: 'A string base64 do certificado é inválida',
     );
   }
 
@@ -62,18 +52,18 @@ class SicoobCertificateException implements PixException {
   static PixException cannotBeEmpty(String error) {
     if (error.contains('Certificate password cannot be empty')) {
       return SicoobCertificateException(
-        error: 'A Senha do Certificado está vazia ou não definida',
-        type: CertificateExceptionType.certificatePasswordCannotBeEmpty,
+        error: 'empty-certificate-password',
+        errorDescription: 'A Senha do Certificado está vazia ou não definida',
       );
-    } else if (error.contains('Certificate String cannot be empty')) {
+    } else if (error.contains('Certificate Base64string cannot be empty')) {
       return SicoobCertificateException(
-        error: 'A String do Certificado está vazia ou não definida',
-        type: CertificateExceptionType.certificateStringCannotBeEmpty,
+        error: 'empty-certificate-base64string',
+        errorDescription: 'A string base64 do certificado está vazia',
       );
     } else {
       return SicoobCertificateException(
-        error: error,
-        type: CertificateExceptionType.unknown,
+        error: 'unknown-certificate-error',
+        errorDescription: error,
       );
     }
   }
@@ -81,14 +71,12 @@ class SicoobCertificateException implements PixException {
   static PixException pathNotFoundException(
       PathNotFoundException pathNotFoundException) {
     return SicoobCertificateException(
-      error: 'Não foi possivel encontrar o caminho do certificado',
-      type: CertificateExceptionType.certificateFilePathNotFound,
+      error: 'could-not-find-the-certificate-path',
+      errorDescription: 'O caminho para o certificado não pôde ser encontrado',
     );
   }
 
   @override
-  String toString() => '''
-SicoobCertificateException:
-      error: $_error,
-      _type: $_type''';
+  String toString() =>
+      'SicoobCertificateException: error: $error, errorData: $errorDescription';
 }

@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                 if (snapshot.error is PixException) {
                   final error = snapshot.error;
                   final errorMessage = error is PixException
-                      ? error.message
+                      ? error.error
                       : snapshot.error.toString();
                   return Center(
                     child: Text(errorMessage),
