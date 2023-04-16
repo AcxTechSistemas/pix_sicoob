@@ -48,7 +48,7 @@ class FetchTransactionsRepository {
       return Failure(SicoobApiException.apiError(
         {
           'error': 'client-id-cannot-be-empty',
-          'errorDescription': 'O ID do cliente não pode estar vazio',
+          'error_description': 'O ID do cliente não pode estar vazio',
         },
       ));
     }

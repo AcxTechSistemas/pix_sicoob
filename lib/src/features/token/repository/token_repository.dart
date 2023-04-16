@@ -28,7 +28,7 @@ class TokenRepository {
       return Failure(SicoobApiException.apiError(
         {
           'error': 'client-id-cannot-be-empty',
-          'errorDescription': 'Identificador do cliente não pode ser vazio',
+          'error-description': 'Identificador do cliente não pode ser vazio',
         },
       ));
     }

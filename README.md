@@ -246,6 +246,7 @@ Below are some of the errors that can be encountered when using this package:
 - **_empty-certificate-base64string_**: A string base64 do certificado está vazia
 - **_could-not-find-the-certificate-path_**: O caminho para o certificado não pôde ser encontrado
 - **_client-id-cannot-be-empty_**: O ID do cliente não pode estar vazio.
+- **_date-range-must-be-in-the-same-month_**: O intervalo de datas deve estar dentro do mesmo mês.
 
 <!-- CONTRIBUTING -->
 

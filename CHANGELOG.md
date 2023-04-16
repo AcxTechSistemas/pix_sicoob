@@ -1,3 +1,7 @@
+## [1.1.8] - 16-04-2023
+
+- Fixed incorrect errorKey: errorDescription => error_description
+
 ## [1.1.7] - 16-04-2023
 
 - Added handling to fit new date range parameters
