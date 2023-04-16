@@ -1,3 +1,8 @@
+## [1.1.7] - 16-04-2023
+
+- Added handling to fit new date range parameters
+- In this new version, only date ranges within the same month will be accepted.
+
 ## [1.1.6] - 03-04-2023
 
 - Removed enums in error handling

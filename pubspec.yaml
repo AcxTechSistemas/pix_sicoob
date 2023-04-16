@@ -1,6 +1,6 @@
 name: pix_sicoob
 description: Easy-to-use interface for integrating Flutter apps with Sicoob's Pix API.
-version: 1.1.6
+version: 1.1.7
 homepage: https://github.com/AcxTechSistemas/pix_sicoob
 
 environment:

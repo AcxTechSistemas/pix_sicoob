@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
@@ -32,6 +33,23 @@ void main() {
   });
 
   group('Consulta de Transações PIX', () {
+    test('Should return SicoobApiException if date range not same month',
+        () async {
+      final startDate = DateTime.now().subtract(const Duration(days: 60));
+      final endDate = DateTime.now();
+      final response = await fetchRepository.fetchTransactions(
+        token,
+        clientID: 'cliendID',
+        uri: uri,
+        dateTimeRange: DateTimeRange(
+          start: startDate,
+          end: endDate,
+        ),
+      );
+      final result = response.exceptionOrNull();
+      expect(result, isNotNull);
+      expect(result!.error, equals('date-range-must-be-in-the-same-month'));
+    });
     test(r'''Caso o clientID esteja vazio ou não definido:
               O Metodo deve retornar uma failure de SicoobApiException
           ''', () async {

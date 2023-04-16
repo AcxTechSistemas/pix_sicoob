@@ -34,6 +34,16 @@ class FetchTransactionsRepository {
     required Uri uri,
     DateTimeRange? dateTimeRange,
   }) async {
+    if (dateTimeRange != null &&
+        dateTimeRange.start.month != dateTimeRange.end.month) {
+      return Failure(
+        SicoobApiException(
+          error: 'date-range-must-be-in-the-same-month',
+          errorDescription:
+              'O intervalo de datas deve estar dentro do mesmo mês',
+        ),
+      );
+    }
     if (clientID.isEmpty) {
       return Failure(SicoobApiException.apiError(
         {
