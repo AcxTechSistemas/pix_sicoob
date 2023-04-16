@@ -1,3 +1,7 @@
+## [1.1.9] - 16-04-2023
+
+- Fixed incorrect errorKey: error-description => error_description
+
 ## [1.1.8] - 16-04-2023
 
 - Fixed incorrect errorKey: errorDescription => error_description
