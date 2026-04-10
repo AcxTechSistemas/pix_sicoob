@@ -1,5 +1,6 @@
-#Certificates
-*.pfx
+# Certificates
+# Use .pubignore for files that shouldn't be published but are ignored here
+example/assets/certs/*.pfx
 example/assets/config.json
 
 # Miscellaneous
