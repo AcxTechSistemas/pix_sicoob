@@ -1,3 +1,24 @@
+## [2.0.0] - 10-04-2026
+
+### Added
+- Created `CONTRIBUTING.md` with package contribution guidelines.
+- Added a `Troubleshooting` section to the main `README.md`.
+- Added a Mermaid diagram to `ARCHITECTURE.md` visualising the project layers.
+
+### Changed
+- **Major Refactoring**: Migrated the codebase to follow **Clean Architecture** and **SOLID** principles.
+- **Improved Error Handling**: Standardized error management using the `Result` pattern (`result_dart`).
+- **Documentation Overhaul**:
+  - Standardized all documentation to English.
+  - Translated and updated `ARCHITECTURE.md`.
+  - Updated `README.md` to remove roadmap features and focus on stable functionality.
+  - Improved example application instructions.
+- **Enhanced Example Security**: Shielded sensitive credentials in the example app using a local configuration file.
+
+### Fixed
+- Fixed several typos across all documentation files.
+- Improved the reliability of the certificate parsing logic.
+
 ## [1.1.9] - 16-04-2023
 
 - Fixed incorrect errorKey: error-description => error_description

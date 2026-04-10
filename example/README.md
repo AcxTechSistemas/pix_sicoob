@@ -1,16 +1,38 @@
-# example
+# Pix Sicoob Example
 
-A new Flutter project.
+This example demonstrates how to integrate the `pix_sicoob` package into a Flutter application. It showcases authentication, transaction fetching, and certificate handling.
 
-## Getting Started
+## Configuration
 
-This project is a starting point for a Flutter application.
+To run the example, you need to provide your own Sicoob credentials and certificate.
 
-A few resources to get you started if this is your first Flutter project:
+1.  **Configure Credentials**:
+    Edit the `example/assets/config.json` file with your details:
+    ```json
+    {
+      "clientID": "YOUR_CLIENT_ID",
+      "certificatePassword": "YOUR_CERTIFICATE_PASSWORD",
+      "certificatePath": "assets/certs/your_certificate.pfx"
+    }
+    ```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2.  **Add your Certificate**:
+    Place your `.pfx` or `.p12` certificate in the `example/assets/certs/` directory (create the directory if it doesn't exist).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3.  **Update Pubspec**:
+    Ensure your certificate is included in the assets section of `example/pubspec.yaml`.
+
+## Running the Example
+
+Once configured, you can run the example using:
+
+```sh
+flutter run
+```
+
+## Features Demonstrated
+
+- **Authentication**: Using a Client ID and a PFX certificate to obtain an OAuth2 token.
+- **Transaction History**: Fetching the last 4 days of Pix transactions.
+- **Error Handling**: Displaying user-friendly messages for common Sicoob API errors.
+- **Security**: The example shows how to load sensitive configuration from a JSON file (standard practice in real-world apps).

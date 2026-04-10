@@ -129,67 +129,26 @@ final pixSicoob = PixSicoob(
 final token = await pixSicoob.getToken();
 ```
 
-### Fetch your Pix transacations Quickly!
+### Fetch your Pix transactions quickly!
 
 ```dart
 final listPix = await pixSicoob.fetchTransactions(
   token: token,
 );
-//Returns the last 4 days transactions
+// Returns the transactions from the last 4 days
 ```
 
 _For more examples, please refer to the_ [Documentation](https://pub.dev/documentation/pix_sicoob/latest/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- ROADMAP -->
+<!-- FEATURES -->
 
 ## Features
 
-- PIX:
-  - ✅ Fetch received PIX transactions
-  - 🚧 Fetch specific pix transaction
-  - 🚧 Request return
-  - 🚧 Consult return
-
----
-
-- COB:
-
-  - ✅ Create an immediate charge
-  - 🚧 Review Immediate Billing
-  - 🚧 Consult Immediate Billing
-  - 🚧 Get the qrcode image of an immediate charge
-  - 🚧 Consult list of immediate charges
-
----
-
-- COBV:
-
-  - 🚧 Create billing due
-  - 🚧 Review billing due
-  - 🚧 Consult Billing due
-  - 🚧 Get qrcode image of a due charge
-  - 🚧 Consult list of due charges
-
----
-
-- LOTECOBV:
-
-  - 🚧 Create / Change batch of due charges
-  - 🚧 Review specific charges within a batch of due charges
-  - 🚧 Consult a specific batch of due charges
-  - 🚧 Consult batches of charges due
-
----
-
-- WEBHOOK:
-  - 🚧 Configure PIX webhook
-  - 🚧 Display information about the PIX webhook
-  - 🚧 Cancel PIX webhook
-  - 🚧 Consult registered webhooks
-
-<!-- Right now this package has concluded all his intended features. If you have any suggestions or find something to report, see below how to contribute to it. -->
+- ✅ **Authentication**: Securely retrieve OAuth2 tokens from Sicoob.
+- ✅ **Fetch Transactions**: Retrieve Pix transactions within a specified date range.
+- ✅ **Certificate Management**: Easily convert X.509 certificates to Base64 strings.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -236,17 +195,31 @@ final listPix = await pixSicoob.fetchTransactions(
 
 ### **Handling errors**
 
-This package provides some ways to map and handle different types of errors,
-Below are some of the errors that can be encountered when using this package:
+This package provides structured ways to map and handle different types of errors.
+Below are common error keys you might encounter:
 
-- **_the-certificate-password-is-incorrect_**: A senha do certificado está incorreta.
-- **_invalid-certificate-file_**: O arquivo de certificado é inválido
-- **_invalid-certificate-base64string_**: A string base64 do certificado é inválida
-- **_empty-certificate-password_**: A senha do certificado está vazia
-- **_empty-certificate-base64string_**: A string base64 do certificado está vazia
-- **_could-not-find-the-certificate-path_**: O caminho para o certificado não pôde ser encontrado
-- **_client-id-cannot-be-empty_**: O ID do cliente não pode estar vazio.
-- **_date-range-must-be-in-the-same-month_**: O intervalo de datas deve estar dentro do mesmo mês.
+- **_the-certificate-password-is-incorrect_**: The certificate password provided is incorrect.
+- **_invalid-certificate-file_**: The provided certificate file is invalid.
+- **_invalid-certificate-base64string_**: The certificate Base64 string is malformed or invalid.
+- **_empty-certificate-password_**: The certificate password cannot be empty.
+- **_empty-certificate-base64string_**: The certificate Base64 string cannot be empty.
+- **_could-not-find-the-certificate-path_**: The system could not locate the certificate file at the specified path.
+- **_client-id-cannot-be-empty_**: The Client ID must be provided.
+- **_date-range-must-be-in-the-same-month_**: Filtering is restricted to within the same calendar month.
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Certificate Parsing Errors**:
+   - Ensure your `.pfx` or `.p12` certificate is valid and not expired.
+   - Double-check the password; it must match the one set when the certificate was exported.
+2. **Connectivity Issues**:
+   - Ensure your application has internet access and can reach `api.sicoob.com.br`.
+   - Verify that your Client ID is correctly registered on the Sicoob Developers Portal.
+3. **Authentication Failures**:
+   - Confirm that the certificate corresponds to the Client ID used.
+   - Ensure you are using the correct production or sandbox URLs (currently defaults to production).
 
 <!-- CONTRIBUTING -->
 
@@ -295,9 +268,9 @@ AcxTech Sistemas
 
 <!-- ACKNOWLEDGMENTS -->
 
-## Aknowledgements
+## Acknowledgements
 
-Thank you to all the people who contributed to this project, whithout you this project would not be here today.
+Thank you to all the people who contributed to this project. Without you, this project would not be here today.
 
 <a href="https://github.com/AcxTechSistemas/pix_sicoob/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=AcxTechSistemas/pix_sicoob" />
@@ -305,7 +278,7 @@ Thank you to all the people who contributed to this project, whithout you this p
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Maintaned by
+## Maintained by
 
 ---
 
