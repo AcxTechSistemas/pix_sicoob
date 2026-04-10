@@ -1,0 +1,5 @@
+{
+  "clientID": "seu-client-id-aqui",
+  "certificatePassword": "sua-senha-do-certificado-aqui",
+  "certificatePath": "assets/certs/seu-certificado.pfx"
+}

@@ -1,68 +1,95 @@
-@Skip('''
-These tests serve to test the package in production with real credentials,
-and should not be tested outside the development environment.
-''')
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:pix_sicoob/pix_sicoob.dart';
-import 'package:pix_sicoob/src/features/token/model/token.dart';
+import 'package:pix_sicoob/src/features/pix/fetch_transactions/repository/fetch_transactions_repository.dart';
+import 'package:pix_sicoob/src/features/token/repository/token_repository.dart';
+import 'package:result_dart/result_dart.dart';
+
+class MockTokenRepository extends Mock implements TokenRepository {}
+
+class MockFetchTransactionsRepository extends Mock
+    implements FetchTransactionsRepository {}
 
 void main() {
   late PixSicoob pixSicoob;
-  late String certificateBase64String;
-  const certificatePassword = '';
-  const clientID = '';
+  late MockTokenRepository mockTokenRepository;
+  late MockFetchTransactionsRepository mockFetchTransactionsRepository;
+  const clientID = 'test-client-id';
 
   setUp(() {
-    certificateBase64String = PixSicoob.certFileToBase64String(
-      pkcs12CertificateFile: File(''),
-    );
-    pixSicoob = PixSicoob(
+    mockTokenRepository = MockTokenRepository();
+    mockFetchTransactionsRepository = MockFetchTransactionsRepository();
+
+    pixSicoob = PixSicoob.withDependencies(
       clientID: clientID,
-      certificateBase64String: certificateBase64String,
-      certificatePassword: certificatePassword,
+      tokenRepository: mockTokenRepository,
+      fetchTransactionsRepository: mockFetchTransactionsRepository,
     );
   });
-  test('Metodo getToken deve retornar um Token', () async {
-    final token = await pixSicoob.getToken();
 
-    expect(token, isNotNull);
-    expect(token.accessToken, isNotNull);
-    expect(token, isA<Token>());
-  });
+  group('PixSicoob Unit Tests', () {
+    test(
+        'getToken deve retornar Sucesso quando o repositório retornar um Token',
+        () async {
+      // Arrange
+      final expectedToken = Token(
+        accessToken: 'access-token',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+        refreshExpiresIn: 0,
+        notBeforePolicy: 0,
+        scope: 'pix.read',
+      );
 
-  test('Metodo fetchTransactions deve retornar uma  Lista de Pix', () async {
-    final token = await pixSicoob.getToken();
-    final listPix = await pixSicoob.fetchTransactions(
-      token: token,
-      dateTimeRange: DateTimeRange(
-        start: DateTime.now().subtract(const Duration(days: 10)),
-        end: DateTime.now(),
-      ),
-    );
-    expect(listPix, isNotNull);
-    expect(listPix, isA<List<Pix>>());
-    expect(listPix[0], isA<Pix>());
-  });
+      when(() => mockTokenRepository.getToken(
+            uri: any(named: 'uri'),
+            clientID: any(named: 'clientID'),
+          )).thenAnswer((_) async => Success(expectedToken));
 
-  test('Metodo createBilling deve retornar uma instancia de Billing', () async {
-    final token = await pixSicoob.getToken();
-    final response = await pixSicoob.createBilling(
-      instaBill: InstaBill(
-        calendario: Calendario(),
-        devedor: Devedor(nome: 'Teste'),
-        valor: Valor(original: 9999),
-        chave: '+559999999999',
-        solicitacaoPagador: 'Teste',
-        infoAdicionais: [
-          InfoAdicionais(nome: 'teste', valor: 9999),
-        ],
-      ),
-      token: token,
-    );
-    expect(response.txid, isNotNull);
-    expect(response.calendario, isNotNull);
-    expect(response.valor.original, isA<double>());
+      // Act
+      final result = await pixSicoob.getToken();
+
+      // Assert
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull(), isA<Token>());
+      expect(result.getOrNull()?.accessToken, 'access-token');
+    });
+
+    test(
+        'fetchTransactions deve retornar Sucesso quando o repositório retornar uma lista',
+        () async {
+      // Arrange
+      final token = Token(
+        accessToken: 'token',
+        tokenType: 'Bearer',
+        expiresIn: 3600,
+        refreshExpiresIn: 0,
+        notBeforePolicy: 0,
+        scope: 'pix.read',
+      );
+
+      final expectedPixList = <Pix>[];
+
+      when(() => mockFetchTransactionsRepository.fetchTransactions(
+            any(),
+            clientID: any(named: 'clientID'),
+            uri: any(named: 'uri'),
+            dateTimeRange: any(named: 'dateTimeRange'),
+          )).thenAnswer((_) async => Success(expectedPixList));
+
+      // Act
+      final result = await pixSicoob.fetchTransactions(
+        token: token,
+        dateTimeRange: DateTimeRange(
+          start: DateTime.now().subtract(const Duration(days: 1)),
+          end: DateTime.now(),
+        ),
+      );
+
+      // Assert
+      expect(result.isSuccess(), isTrue);
+      expect(result.getOrNull(), isA<List<Pix>>());
+    });
   });
 }

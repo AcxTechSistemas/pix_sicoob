@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pix_sicoob/src/errors/pix_exception_interface.dart';
 import 'package:pix_sicoob/src/errors/sicoob_api_exception.dart';
-import 'package:pix_sicoob/src/errors/sicoob_unknown_exception.dart';
 import 'package:pix_sicoob/src/services/client_service.dart';
+import 'package:pix_sicoob/src/utils/date_utils.dart';
 import 'package:result_dart/result_dart.dart';
 import '../../../token/model/token.dart';
 import '../../models/pix/parametros.dart';
@@ -13,9 +12,6 @@ import '../../models/pix/pix.dart';
 class FetchTransactionsRepository {
   /// Instance of the [ClientService] used to make API calls
   final ClientService _client;
-
-  /// Instance of the [Parametros] used to make API calls
-  late Parametros _parametros;
 
   /// Constructor for [FetchTransactionsRepository] that receives a [ClientService]
   FetchTransactionsRepository(ClientService client) : _client = client;
@@ -28,7 +24,7 @@ class FetchTransactionsRepository {
   ///
   /// Returns a [Success] object containing a list of [Pix] objects if successful
   /// Returns a [Failure] object containing a [PixException] if unsuccessful
-  Future<Result<List<Pix>, PixException>> fetchTransactions(
+  Future<ResultDart<List<Pix>, PixException>> fetchTransactions(
     Token token, {
     required String clientID,
     required Uri uri,
@@ -60,15 +56,13 @@ class FetchTransactionsRepository {
         uri: uri,
         dateTimeRange: dateTimeRange,
       );
-      _parametros = Parametros.fromMap(response['parametros']);
-      if (_parametros.paginacao.quantidadeDePaginas <= 1) {
-        var transactions = response['pix'] as List;
-        pixTransactions
-            .addAll(transactions.map((e) => Pix.fromMap(e)).toList());
-        final reversedList = pixTransactions.reversed.toList();
-        return Success(reversedList);
-      } else {
-        for (var i = 0; i < _parametros.paginacao.quantidadeDePaginas; i++) {
+      
+      final parametros = Parametros.fromMap(response['parametros']);
+      var transactions = response['pix'] as List;
+      pixTransactions.addAll(transactions.map((e) => Pix.fromMap(e)));
+
+      if (parametros.paginacao.quantidadeDePaginas > 1) {
+        for (var i = 1; i < parametros.paginacao.quantidadeDePaginas; i++) {
           final paginaAtual = i.toString();
           final multiplePagesResponse = await _callApi(
             token,
@@ -78,13 +72,12 @@ class FetchTransactionsRepository {
             paginaAtual: paginaAtual,
           );
 
-          var transactions = multiplePagesResponse['pix'] as List;
+          var moreTransactions = multiplePagesResponse['pix'] as List;
           pixTransactions
-              .addAll(transactions.map((e) => Pix.fromMap(e)).toList());
+              .addAll(moreTransactions.map((e) => Pix.fromMap(e)));
         }
-        final reversedList = pixTransactions.reversed.toList();
-        return Success(reversedList);
       }
+      return Success(pixTransactions.reversed.toList());
     } on PixException catch (e) {
       return Failure(e);
     }
@@ -127,25 +120,13 @@ class FetchTransactionsRepository {
         'x-sicoob-clientid': clientID,
       },
     );
-    return response.fold((success) {
-      if (success.containsKey('pix')) {
-        return success;
-      } else {
-        throw SicoobApiException.apiError(success);
-      }
-    }, (failure) {
-      throw SicoobUnknownException.unknownException(failure);
-    });
+    
+    final mapResponse = response.getOrThrow();
+    if (mapResponse.containsKey('pix')) {
+      return mapResponse;
+    } else {
+      throw SicoobApiException.apiError(mapResponse);
+    }
   }
 }
 
-/// Private method that formats a [DateTime] object to ISO 8601 format with time zone information
-///
-/// The [date] parameter is a [DateTime] object to be formatted
-///
-/// Returns a [String] containing the formatted date string
-String formatToIso8601TimeZone({required DateTime date}) {
-  String toIso8601TimeZone =
-      DateFormat('yyyy-MM-ddThh:mm:ss.00-03:00').format(date);
-  return toIso8601TimeZone;
-}

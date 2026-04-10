@@ -20,7 +20,7 @@ class TokenRepository {
   ///
   /// Returns a [Future] containing a [Result] object with either a [Token] or
   /// a [PixException].
-  Future<Result<Token, PixException>> getToken({
+  Future<ResultDart<Token, PixException>> getToken({
     required Uri uri,
     required String clientID,
   }) async {
@@ -42,15 +42,12 @@ class TokenRepository {
       },
     );
 
-    return response.fold((success) {
+    return response.flatMap((success) {
       if (success.containsKey('access_token')) {
-        var token = Token.fromMap(success);
-        return Success(token);
+        return Success(Token.fromMap(success));
       } else {
         return Failure(SicoobApiException.apiError(success));
       }
-    }, (failure) {
-      return Failure(failure);
     });
   }
 }

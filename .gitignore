@@ -1,3 +1,7 @@
+#Certificates
+*.pfx
+example/assets/config.json
+
 # Miscellaneous
 *.class
 *.log

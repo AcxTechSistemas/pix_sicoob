@@ -10,15 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ">=0.13.5 <1.0.0"
+  http: ^1.6.0
   intl: ">=0.17.0 <1.0.0"
-  result_dart: ">=1.0.5 <2.0.0"
+  result_dart: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  mocktail: ">=0.3.0 <1.0.0"
+  flutter_lints: ^6.0.0
+  mocktail: ^1.0.4
 
 test:
   script:

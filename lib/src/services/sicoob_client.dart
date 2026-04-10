@@ -25,16 +25,13 @@ import 'package:result_dart/result_dart.dart';
 /// ```
 class SicoobClient implements ClientService {
   final SecurityContext securityContext;
-  late HttpClient httpClient;
-  late IOClient ioClient;
+  final IOClient ioClient;
 
   /// Creates an instance of [SicoobClient] with the specified [securityContext] for making secure HTTP requests.
   ///
   /// The [securityContext] must be initialized with the appropriate certificate and key data for the desired server.
-  SicoobClient(this.securityContext) {
-    httpClient = HttpClient(context: securityContext);
-    ioClient = IOClient(httpClient);
-  }
+  SicoobClient(this.securityContext, {IOClient? customIoClient})
+      : ioClient = customIoClient ?? IOClient(HttpClient(context: securityContext));
 
   @override
 
@@ -42,7 +39,7 @@ class SicoobClient implements ClientService {
   ///
   /// Returns a [Result] object containing a [Map] of key-value pairs representing the JSON response body if the request is successful.
   /// Otherwise, returns a [Failure] containing a [PixException] indicating the reason for the failure.
-  Future<Result<Map<String, dynamic>, PixException>> get(
+  Future<ResultDart<Map<String, dynamic>, PixException>> get(
     Uri uri, {
     Map<String, String>? headers,
     Map<String, String>? queryParameters,
@@ -53,8 +50,16 @@ class SicoobClient implements ClientService {
         getUri,
         headers: headers,
       );
-      var jsonBody = jsonDecode(response.body);
-      return Success(jsonBody);
+
+      try {
+        var jsonBody = jsonDecode(response.body);
+        return Success(jsonBody);
+      } on FormatException catch (_) {
+        return Failure(SicoobHttpException(
+          error: 'http-error-${response.statusCode}',
+          errorDescription: response.body,
+        ));
+      }
     } catch (e) {
       return Failure(SicoobHttpException.httpException(e.toString()));
     }
@@ -66,7 +71,7 @@ class SicoobClient implements ClientService {
   ///
   /// Returns a [Result] object containing a [Map] of key-value pairs representing the JSON response body if the request is successful.
   /// Otherwise, returns a [Failure] containing a [PixException] indicating the reason for the failure.
-  Future<Result<Map<String, dynamic>, PixException>> post(
+  Future<ResultDart<Map<String, dynamic>, PixException>> post(
     Uri uri, {
     Map<String, String>? headers,
     dynamic body,
@@ -77,8 +82,16 @@ class SicoobClient implements ClientService {
         headers: headers,
         body: body,
       );
-      var jsonBody = jsonDecode(response.body);
-      return Success(jsonBody);
+
+      try {
+        var jsonBody = jsonDecode(response.body);
+        return Success(jsonBody);
+      } on FormatException catch (_) {
+        return Failure(SicoobHttpException(
+          error: 'http-error-${response.statusCode}',
+          errorDescription: response.body,
+        ));
+      }
     } catch (e) {
       return Failure(SicoobHttpException.httpException(e.toString()));
     }

@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
 import 'package:flutter/material.dart';
 import 'package:pix_sicoob/pix_sicoob.dart';
 
@@ -27,22 +31,77 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-late PixSicoob pixSicoob;
-
 class _HomePageState extends State<HomePage> {
+  String? certificateBase64String;
+  bool isCertificateLoaded = false;
+  String? loadError;
+  Map<String, dynamic>? config;
+
+  Future<List<Pix>>? transactionsFuture;
+  late PixSicoob pixSicoob;
+
   @override
   void initState() {
     super.initState();
+    _loadConfig();
   }
 
-  Future<List<Pix>> fetchTransactions() async {
-    pixSicoob = PixSicoob(
-      clientID: '',
-      certificateBase64String: '',
-      certificatePassword: '',
-    );
-    final token = await pixSicoob.getToken();
-    final listPix = await pixSicoob.fetchTransactions(token: token);
+  Future<void> _loadConfig() async {
+    try {
+      final configString = await rootBundle.loadString('assets/config.json');
+      setState(() {
+        config = json.decode(configString);
+      });
+    } catch (e) {
+      setState(() {
+        loadError =
+            'Arquivo assets/config.json não encontrado. Crie um baseado no config_example.json';
+      });
+    }
+  }
+
+  Future<void> _loadCertificate() async {
+    if (config == null) return;
+
+    setState(() {
+      loadError = null;
+    });
+    try {
+      final certPath = config!['certificatePath'];
+      final certPassword = config!['certificatePassword'];
+      final clientID = config!['clientID'];
+
+      final certData = await rootBundle.load(certPath);
+      final bytes = certData.buffer.asUint8List();
+      certificateBase64String = base64Encode(bytes);
+
+      pixSicoob = PixSicoob(
+        clientID: clientID,
+        certificateBase64String: certificateBase64String!,
+        certificatePassword: certPassword,
+      );
+
+      setState(() {
+        isCertificateLoaded = true;
+      });
+    } catch (e) {
+      setState(() {
+        loadError = e.toString();
+        isCertificateLoaded = false;
+      });
+    }
+  }
+
+  void _fetchTransactions() {
+    setState(() {
+      transactionsFuture = _doFetchTransactions();
+    });
+  }
+
+  Future<List<Pix>> _doFetchTransactions() async {
+    final token = (await pixSicoob.getToken()).getOrThrow();
+    final listPix =
+        (await pixSicoob.fetchTransactions(token: token)).getOrThrow();
     return listPix;
   }
 
@@ -51,52 +110,142 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Api Pix V2 Sicoob'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: FutureBuilder(
-        future: fetchTransactions(),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              return const Center(child: CircularProgressIndicator());
-            case ConnectionState.done:
-              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                int length = snapshot.data!.length;
-
-                return RefreshIndicator(
-                  onRefresh: () {
-                    return Future(() => setState(() {}));
-                  },
-                  child: ListView.builder(
-                    itemCount: length,
-                    itemBuilder: (context, index) {
-                      final Pix transaction = snapshot.data![index];
-
-                      return ListTile(
-                        title: Text(transaction.pagador.nome.split(' ')[0]),
-                        subtitle: Text(transaction.valor),
-                        trailing: Text(transaction.horario),
-                      );
-                    },
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (config == null)
+              Card(
+                color: Colors.orange.shade100,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.warning, color: Colors.orange, size: 48),
+                      const SizedBox(height: 8),
+                      Text(
+                        loadError ?? 'Carregando configuração...',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-                );
-              } else if (snapshot.hasError) {
-                if (snapshot.error is PixException) {
-                  final error = snapshot.error;
-                  final errorMessage = error is PixException
-                      ? error.error
-                      : snapshot.error.toString();
-                  return Center(
-                    child: Text(errorMessage),
-                  );
-                }
-              }
-              return const Center(
-                child: Text('Nenhuma transação encontrada'),
-              );
-          }
-        },
+                ),
+              )
+            else if (!isCertificateLoaded) ...[
+              ElevatedButton.icon(
+                onPressed: _loadCertificate,
+                icon: const Icon(Icons.security),
+                label: const Text('1. Carregar Certificado e Config'),
+                style:
+                    ElevatedButton.styleFrom(padding: const EdgeInsets.all(16)),
+              ),
+              if (loadError != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 16.0),
+                  child: Text(
+                    'Erro:\n$loadError',
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ] else ...[
+              Card(
+                color: Colors.green.shade50,
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.check_circle, color: Colors.green),
+                      SizedBox(width: 12),
+                      Text(
+                        'Ambiente Blindado e Pronto!',
+                        style: TextStyle(
+                            color: Colors.green, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: _fetchTransactions,
+                icon: const Icon(Icons.list),
+                label: const Text('2. Buscar Transações'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                  backgroundColor: Colors.blue.shade50,
+                ),
+              ),
+            ],
+            const SizedBox(height: 24),
+            const Divider(),
+            const Text(
+              'Transações Recentes',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: transactionsFuture == null
+                  ? const Center(child: Text('Aguardando...'))
+                  : FutureBuilder<List<Pix>>(
+                      future: transactionsFuture,
+                      builder: (context, snapshot) {
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.waiting:
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          case ConnectionState.done:
+                            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              return ListView.separated(
+                                itemCount: snapshot.data!.length,
+                                separatorBuilder: (_, __) => const Divider(),
+                                itemBuilder: (context, index) {
+                                  final transaction = snapshot.data![index];
+                                  return ListTile(
+                                    leading: const CircleAvatar(
+                                        child: Icon(Icons.pix)),
+                                    title: Text(transaction.pagador.nome),
+                                    subtitle:
+                                        Text('Horário: ${transaction.horario}'),
+                                    trailing: Text(
+                                      'R\$ ${transaction.valor}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            } else if (snapshot.hasError) {
+                              final error = snapshot.error;
+                              String errorMessage = error.toString();
+                              if (error is PixException) {
+                                errorMessage =
+                                    '${error.error}\n${error.errorDescription}';
+                              }
+                              return Center(
+                                child: Text(
+                                  'Falha:\n$errorMessage',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                              );
+                            }
+                            return const Center(
+                                child: Text('Nenhuma transação.'));
+                          default:
+                            return const SizedBox();
+                        }
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

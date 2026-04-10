@@ -22,9 +22,8 @@ void main() {
 
   setUp(() {
     securityContext = SecurityContext();
-    client = SicoobClient(securityContext);
     mockIOClient = MockIOClient();
-    client.ioClient = mockIOClient;
+    client = SicoobClient(securityContext, customIoClient: mockIOClient);
     testUri = Uri.parse('https://example.com');
     registerFallbackValue(testUri);
     testHeaders = {'Content-Type': 'application/json'};

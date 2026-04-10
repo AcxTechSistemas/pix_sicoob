@@ -19,7 +19,7 @@ class SicoobSecurity implements ClientSecurity {
   /// Throws a [SicoobCertificateException] if there is an issue with the certificate,
   /// or a [SicoobUnknownException] for any other type of error.
   @override
-  Result<SecurityContext, PixException> getContext({
+  ResultDart<SecurityContext, PixException> getContext({
     required String certificateBase64String,
     required String certificatePassword,
   }) {
@@ -64,7 +64,7 @@ class SicoobSecurity implements ClientSecurity {
   /// Throws a [SicoobCertificateException] if there is an issue with the certificate,
   /// or a [SicoobUnknownException] for any other type of error.
   @override
-  Result<String, PixException> certFileToBase64String(
+  ResultDart<String, PixException> certFileToBase64String(
       {required File pkcs12CertificateFile}) {
     try {
       final bytes = pkcs12CertificateFile.readAsBytesSync();
@@ -86,7 +86,7 @@ class SicoobSecurity implements ClientSecurity {
   /// Throws a [SicoobCertificateException] if there is an issue with the certificate,
   /// or a [SicoobUnknownException] for any other type of error
   @override
-  Result<Uint8List, PixException> certificateStringToBytes(
+  ResultDart<Uint8List, PixException> certificateStringToBytes(
       String certificateBase64String) {
     try {
       var certificateBytes = base64.decode(certificateBase64String);
